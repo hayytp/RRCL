@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Challenges - RRCL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn active">The List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="update.html" class="nav-btn">Live Feed</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+        </div>
+    </nav>
+
+    <div class="main-layout"> 
+        <div class="list-column">
+            
+            <div class="page-header">
+                <a href="list.html" class="action-btn back-btn"><span>⬅</span> Back to Main List</a>
+                <h1 class="page-title">Pending Games</h1>
+                <p class="page-subtitle">Games where placement hasn't been decided or hasn't gotten a challenge (but has challenge potential)</p>
+            </div>
+
+            <div id="pending-cards-container">
+                <p id="empty-pending-msg" class="empty-msg">Loading pending games...</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Make sure this is the exact URL for your Pending Google Sheet tab!
+        const pendingCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=1651991522&single=true&output=csv';
+
+        fetch(pendingCsvUrl)
+            .then(response => response.text())
+            .then(data => {
+                const emptyMsg = document.getElementById('empty-pending-msg');
+                const container = document.getElementById('pending-cards-container');
+
+                if (data.trim().startsWith('<')) {
+                    emptyMsg.innerText = "Error: Google Sheets blocked the connection. Check 'Publish to Web'!";
+                    emptyMsg.style.color = "#ef4444"; 
+                    return; 
+                }
+
+                const rows = data.split('\n').slice(1);
+                let validCards = 0;
+                container.innerHTML = ''; // Clears the loading message
+
+                rows.forEach(row => {
+                    if (!row.trim()) return;
+                    
+                    // Safely split commas, ignoring those inside text
+                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    
+                    // Column 0 = Game Title, Column 1 = Image, Column 2 = Game Link
+                    if (!cols[0] || cols[0].trim() === '') return;
+
+                    const title = cols[0].trim().replace(/^"|"$/g, '');
+                    const image = cols[1] ? cols[1].trim() : '';
+                    const gameLink = cols[2] ? cols[2].trim() : '#';
+
+                    // Simplified Card structure (No points or challenge descriptions)
+                    const cardHtml = `
+                        <div class="pointercrate-card pending-card">
+                            <a href="${gameLink}" target="_blank" class="card-link-wrapper">
+                                <img src="${image}" alt="${title}" class="card-thumb" loading="lazy">
+                            </a>
+                            <div class="card-text">
+                                <h2><a href="${gameLink}" target="_blank" class="game-title-link">${title}</a></h2>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.innerHTML += cardHtml;
+                    validCards++;
+                });
+
+                if (validCards === 0) {
+                    container.innerHTML = '<p class="empty-msg">No plans for list</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('empty-pending-msg').innerText = "Error loading pending list.";
+                console.error("Error loading pending list:", error);
+            });
+    </script>
+</body>
+</html>

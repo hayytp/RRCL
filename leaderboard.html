@@ -12,8 +12,9 @@
         <div class="nav-brand">Roblox Ranked Challenges List</div>
 <div class="nav-links">
             <a href="index.html" class="nav-btn">Home</a>
-            <a href="list.html" class="nav-btn">Main List</a>
+            <a href="list.html" class="nav-btn">The List</a>
             <a href="leaderboard.html" class="nav-btn active">Leaderboard</a>
+            <a href="update.html" class="nav-btn">Live Feed</a>
             <a href="submit.html" class="nav-btn">Submit</a>
         </div>
     </nav>
@@ -45,7 +46,8 @@
                     if (!cols[1] || cols[1].trim() === '') return; 
 
                     const rank = cols[0];
-                    const name = cols[1];
+                    const rawName = cols[1];
+                    const name = rawName.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     const total = cols[2];
                     const t0 = cols[3] || 0;
                     const t1 = cols[4] || 0;

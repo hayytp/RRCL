@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Feed - RRCL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn">The List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="update.html" class="nav-btn active">Live Feed</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+        </div>
+    </nav>
+
+    <div class="main-layout">
+        <div class="leaderboard-container"> <h2>Live Feed</h2>
+            <p>Recent challenge approvals and list announcements</p>
+            
+            <div class="updates-list" id="dynamic-updates">
+                <p style="color: #ccc; text-align: center;">Loading feed...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const updatesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR1V7E4DMzB0fLSL0V1MeWSB2fdUowhNSYXavFEvBrKMk2nscqdl1SJTGiMdPkwe7qf7GUfPCFauhNo/pub?gid=0&single=true&output=csv';
+
+        fetch(updatesCsvUrl)
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split('\n').slice(1); // Skips the header row
+                const updatesContainer = document.getElementById('dynamic-updates');
+                updatesContainer.innerHTML = ''; 
+
+                    rows.reverse().forEach(row => {
+                    if (!row.trim()) return; 
+                    
+                    const cols = row.split(',');
+                    // If there is no Player Name, skip it
+                    if (!cols[1] || cols[1].trim() === '') return; 
+
+                    const date = cols[0].trim();
+                    const name = cols[1].trim();
+                    const tier = cols[2].trim();
+                    const game = cols[3].trim();
+                    const status = cols[4] ? cols[4].trim() : ''; // Status is now in column E (index 4)
+
+                    // Builds the announcement card exactly to your new format
+                    const feedCard = `
+                        <div class="update-card">
+                            <div class="update-date">${date}</div>
+                            <div class="update-content">
+                                <strong>${name}</strong>: Tier ${tier} - <span class="update-challenge">${game}</span>
+                            </div>
+                            <div class="update-status">${status}</div>
+                        </div>
+                    `;
+                    
+                    updatesContainer.innerHTML += feedCard;
+                });
+            })
+            .catch(error => {
+                document.getElementById('dynamic-updates').innerHTML = '<p style="color: #ef4444; text-align: center;">Error loading feed.</p>';
+            });
+    </script>   
+</body>
+</html>

@@ -1,6 +1,17 @@
 /* =========================================
    1. GLOBAL STYLES & BACKGROUND
    ========================================= */
+:root {
+    --primary-green: #22c55e;
+    --tier-0: #22c55e;
+    --tier-1: #cfe2f3;
+    --tier-2: #BA7FF5;
+    --tier-3: #ef4444;
+    --tier-4: #274E13;
+    --tier-5: #073763;
+    --tier-6: #351c75;
+}
+
 body {
     background-image: url('https://pbs.twimg.com/media/GHCKEKUWMAAf9rS.jpg'); 
     background-size: cover;
@@ -536,7 +547,7 @@ body {
 
 /* The big green submit button */
 .submit-btn {
-    background-color: #22c55e;
+    background-color: var(--primary-green);
     color: #111111;
     font-size: 1.2rem;
     font-weight: bold;
@@ -860,4 +871,149 @@ body {
     .tier-stat {
         width: 100%; /* Forces the stat boxes to stack cleanly into a column on tiny screens */
     }
+}   
+
+/* =========================================
+   14. LIVE FEED SETTINGS
+   ========================================= */
+.updates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 15px;
+}
+
+.updates-list::-webkit-scrollbar { width: 8px; }
+.updates-list::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); border-radius: 4px; }
+.updates-list::-webkit-scrollbar-thumb { background: #555555; border-radius: 4px; }
+
+.update-card {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #444444;
+    border-left: 4px solid #f97316;
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+}
+
+.update-date {
+    color: #888888;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    min-width: 60px;
+}
+
+.update-content {
+    flex-grow: 1;
+    color: #cccccc;
+    font-size: 1.1rem;
+}
+
+.update-content strong {
+    color: #ffffff;
+}
+
+.update-challenge {
+    color: #cfe2f3; /* Light blue for the challenge name */
+}
+
+.update-status {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid #22c55e;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* =========================================
+   15. NAVIGATION BUTTONS & PENDING PAGE
+   ========================================= */
+.page-navigation-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    padding-right: 5px;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: none;
+    color: #888888; 
+    font-size: 0.9rem; 
+    font-weight: normal;
+    text-transform: none; 
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+}
+
+.action-btn:hover {
+    color: #f97316; 
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+.pending-btn {
+    border: none;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 8px;
+    border-top: 4px solid #f97316;
+    border: 1px solid #555555;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.page-title {
+    color: #ffffff;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 15px 0 5px 0;
+}
+
+.page-subtitle {
+    color: #cccccc;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Pending Card Adjustments */
+.pending-card {
+    border-top-color: #f97316; /* Replaces the green accent with orange */
+}
+
+.pending-status-text {
+    color: #888888 !important;
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-top: 5px !important;
+}
+
+.empty-msg {
+    text-align: center;
+    color: #cccccc; 
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 50px;
+    font-weight: bold;
 }

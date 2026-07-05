@@ -7,93 +7,79 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav class="top-navbar">
+    <nav class="top-navbar">
         <div class="nav-brand">Roblox Ranked Challenges List</div>
-        
-<div class="nav-links">
-            <a href="index.html" class="nav-btn">Home</a>
-            <a href="list.html" class="nav-btn active">Main List</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn active">The List</a>
             <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="update.html" class="nav-btn">Live Feed</a>
             <a href="submit.html" class="nav-btn">Submit</a>
         </div>
     </nav>
 
-<div class="main-layout"> 
-        
-<div class="list-column">
+    <div class="main-layout"> 
+        <div class="list-column">
             
-            <div class="tier-section tier-0">
-                <button class="tier-toggle">Tier 0 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-0-list">
-                        </div>
-                </div>
-            </div>
-
-            <div class="tier-section tier-1">
-                <button class="tier-toggle">Tier 1 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-1-list"></div>
-                </div>
-            </div>
-
-            <div class="tier-section tier-2">
-                <button class="tier-toggle">Tier 2 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-2-list"></div>
-                </div>
-            </div>
-
-            <div class="tier-section tier-3">
-                <button class="tier-toggle">Tier 3 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-3-list"></div>
-                </div>
-            </div>
-
-            <div class="tier-section tier-4">
-                <button class="tier-toggle">Tier 4 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-4-list"></div>
-                </div>
-            </div>
-
-            <div class="tier-section tier-5">
-                <button class="tier-toggle">Tier 5 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-5-list"></div>
-                </div>
-            </div>
-
-            <div class="tier-section tier-6">
-                <button class="tier-toggle">Tier 6 <span class="toggle-icon">+</span></button>
-                <div class="tier-content">
-                    <div class="tier-content-inner" id="tier-6-list"></div>
-                </div>
-            </div>
-
-        </div>
+            <div id="main-list-view">
+                <div class="page-navigation-container">
+    <a href="pending.html" class="action-btn pending-btn">View Pending List <span>➔</span></a>
 </div>
-        <!-- ACCORDION SCRIPT -->
+                
+                <div class="tier-section tier-0">
+                    <button class="tier-toggle">Tier 0 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-0-list"></div>
+                    </div>
+                </div>
+
+                <div class="tier-section tier-1">
+                    <button class="tier-toggle">Tier 1 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-1-list"></div>
+                    </div>
+                </div>
+
+                <div class="tier-section tier-2">
+                    <button class="tier-toggle">Tier 2 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-2-list"></div>
+                    </div>
+                </div>
+
+                <div class="tier-section tier-3">
+                    <button class="tier-toggle">Tier 3 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-3-list"></div>
+                    </div>
+                </div>
+
+                <div class="tier-section tier-4">
+                    <button class="tier-toggle">Tier 4 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-4-list"></div>
+                    </div>
+                </div>
+
+                <div class="tier-section tier-5">
+                    <button class="tier-toggle">Tier 5 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-5-list"></div>
+                    </div>
+                </div>
+
+                <div class="tier-section tier-6">
+                    <button class="tier-toggle">Tier 6 <span class="toggle-icon">+</span></button>
+                    <div class="tier-content">
+                        <div class="tier-content-inner" id="tier-6-list"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
-        const toggles = document.querySelectorAll('.tier-toggle');
-
-        toggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                this.classList.toggle('active');
-                
-                const content = this.nextElementSibling;
-                
-                if (content.style.maxHeight) {
-                    content.style.maxHeight = null;
-                } else {
-                    content.style.maxHeight = content.scrollHeight + "px"; 
-                }
-            });
-        });
-    </script>
-
-<script>
         const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
 
         fetch(challengesCsvUrl)
@@ -105,20 +91,21 @@
                     '0': '', '1': '', '2': '', '3': '', '4': '', '5': '', '6': ''
                 };
 
+                // Safely split columns ignoring commas inside quotes
                 rows.forEach(row => {
                     if (!row.trim()) return; 
                     
-                    const cols = row.split(',');
+                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     if (!cols[1] || cols[1].trim() === '') return; 
 
                     let rawTier = cols[0].replace(/[^0-6]/g, '');
                     if (rawTier === '') return; 
                     const tier = rawTier[0]; 
 
-                    const title = cols[1].trim();
-                    const image = cols[2].trim();
-                    const challenge = cols[3].trim();
-                    const points = cols[4].trim();
+                    const title = cols[1].trim().replace(/^"|"$/g, '');
+                    const image = cols[2] ? cols[2].trim() : '';
+                    const challenge = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
+                    const points = cols[4] ? cols[4].trim() : '';
                     const gameLink = cols[5] ? cols[5].trim() : '#'; 
 
                     const cardHtml = `
@@ -152,9 +139,11 @@
                 console.error("Error loading challenges:", error);
             });
 
+        // ACCORDION LOGIC
         function attachAccordionLogic() {
             const toggles = document.querySelectorAll('.tier-toggle');
             toggles.forEach(toggle => {
+                // Remove old listeners to prevent duplicates
                 const newToggle = toggle.cloneNode(true);
                 toggle.parentNode.replaceChild(newToggle, toggle);
                 
