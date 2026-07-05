@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Random Challenge List</title>
+    
+    <!-- The link to your CSS file MUST go inside the <head> -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- 🟢 THE TOP NAVIGATION BAR -->
+<nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Home</a>
+            <a href="list.html" class="nav-btn active">Main List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+        </div>
+    </nav>
+
+<div class="main-layout"> 
+        
+<div class="list-column">
+            
+            <div class="tier-section tier-0">
+                <button class="tier-toggle">Tier 0 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-0-list">
+                        </div>
+                </div>
+            </div>
+
+            <div class="tier-section tier-1">
+                <button class="tier-toggle">Tier 1 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-1-list"></div>
+                </div>
+            </div>
+
+            <div class="tier-section tier-2">
+                <button class="tier-toggle">Tier 2 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-2-list"></div>
+                </div>
+            </div>
+
+            <div class="tier-section tier-3">
+                <button class="tier-toggle">Tier 3 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-3-list"></div>
+                </div>
+            </div>
+
+            <div class="tier-section tier-4">
+                <button class="tier-toggle">Tier 4 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-4-list"></div>
+                </div>
+            </div>
+
+        </div>
+</div>
+        <!-- ACCORDION SCRIPT -->
+    <script>
+        const toggles = document.querySelectorAll('.tier-toggle');
+
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                // Toggle the active class on the button
+                this.classList.toggle('active');
+                
+                // Get the hidden content right below the button
+                const content = this.nextElementSibling;
+                
+                // Slide open or closed
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null; // Close it
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px"; // Open it exactly to the height of the cards inside
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // ⚠️ PASTE YOUR NEW CHALLENGES CSV LINK HERE ⚠️
+        const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
+
+        fetch(challengesCsvUrl)
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split('\n').slice(1); 
+
+                rows.forEach(row => {
+                    if (!row.trim()) return; 
+                    
+                    const cols = row.split(',');
+                    if (!cols[1] || cols[1].trim() === '') return; 
+
+                    // Grab data from the columns
+                    const tier = cols[0].trim(); 
+                    const title = cols[1].trim();
+                    const image = cols[2].trim();
+                    const challenge = cols[3].trim();
+                    const points = cols[4].trim();
+                    
+                    // 🆕 Grab the new Game Link (Column F)
+                    const gameLink = cols[5] ? cols[5].trim() : '#'; 
+
+                    // 🆕 Build the HTML with the clickable <a> tags
+                    const cardHtml = `
+                        <div class="pointercrate-card">
+                            <a href="${gameLink}" target="_blank" class="card-link-wrapper">
+                                <img src="${image}" alt="${title}" class="card-thumb">
+                            </a>
+                            <div class="card-text">
+                                <h2><a href="${gameLink}" target="_blank" class="game-title-link">${title}</a></h2>
+                                <p><strong>Challenge:</strong> ${challenge}</p>
+                                <p class="points-text">${points} points</p>
+                            </div>
+                        </div>
+                    `;
+
+                    // Find the matching tier box and drop the card inside
+                    const targetContainer = document.getElementById(`tier-${tier}-list`);
+                    if (targetContainer) {
+                        targetContainer.innerHTML += cardHtml;
+                    }
+                });
+
+                // Attach the click animations AFTER the cards are loaded
+                attachAccordionLogic();
+            })
+            .catch(error => {
+                console.error("Error loading challenges:", error);
+            });
+
+        // The Accordion Logic
+        function attachAccordionLogic() {
+            const toggles = document.querySelectorAll('.tier-toggle');
+            toggles.forEach(toggle => {
+                // Remove old event listeners to prevent double-clicking bugs
+                const newToggle = toggle.cloneNode(true);
+                toggle.parentNode.replaceChild(newToggle, toggle);
+                
+                newToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null; 
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px"; 
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

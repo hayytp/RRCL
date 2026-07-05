@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Record - RRCL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 🟢 THE TOP NAVIGATION BAR -->
+    <nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Home</a>
+            <a href="list.html" class="nav-btn">Main List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn active">Submit</a>
+            
+        </div>
+    </nav>
+
+    <!-- SUBMISSION FORM SECTION -->
+    <div class="main-layout">
+        <div class="submit-container">
+            <h2>Submit a Record</h2>
+            <p>submit.</p>
+            
+            <!-- We will attach the Google Sheets hookup to this ID later -->
+            <form id="rrcl-submit-form">
+                
+                <div class="form-group">
+                    <label for="roblox-name">Roblox Username</label>
+                    <input type="text" id="roblox-name" name="roblox-name" required>
+                </div>
+
+                <!-- THE NEW MULTIPLE SUBMISSIONS CHECKBOX -->
+                <div class="form-checkbox-group">
+                    <input type="checkbox" id="multiple-subs" name="multiple-subs">
+                    <label for="multiple-subs">I am submitting multiple completions at once</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="challenge-name">Challenge(s) Completed</label>
+                    <input type="text" id="challenge-name" name="challenge-name" placeholder="e.g. DOORS" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="video-link">Proof Link</label>
+                    <input type="url" id="video-link" name="video-link" placeholder="YouTube, Google Drive, etc." required>
+                </div>
+
+                <button type="submit" class="submit-btn">Send Submission</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- THE GOOGLE SHEETS HOOKUP SCRIPT -->
+    <script>
+        // Cool UI Trick: Changes placeholder text when checkbox is toggled
+        const multipleCheckbox = document.getElementById('multiple-subs');
+        const challengeInput = document.getElementById('challenge-name');
+
+        multipleCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                challengeInput.placeholder = "e.g. DOORS, Evade, Forsaken (Separated by commas)";
+            } else {
+                challengeInput.placeholder = "e.g. DOORS";
+            }
+        });
+
+        // Handle Form Submission
+        document.getElementById('rrcl-submit-form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const btn = document.querySelector('.submit-btn');
+            btn.innerText = "Sending..."; 
+
+            // Collect data including the True/False state of the checkbox
+            const formData = {
+                'roblox-name': document.getElementById('roblox-name').value,
+                'challenge-name': document.getElementById('challenge-name').value,
+                'video-link': document.getElementById('video-link').value,
+                'is-multiple': multipleCheckbox.checked // This will be true or false
+            };
+
+            // ⚠️ YOUR SCRIPT URL GOES HERE ⚠️
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz4N5_pdVNMEI7UCutV6EOvTVipXVq2grhnzrPATfCLyUzJs6FjT6pAiHqnF5CMKPLs/exec';
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                btn.innerText = "Submitted! ✅";
+                btn.style.backgroundColor = "#1ea34d"; 
+                document.getElementById('rrcl-submit-form').reset(); 
+                challengeInput.placeholder = "e.g. DOORS"; // Reset placeholder
+                
+                setTimeout(() => { 
+                    btn.innerText = "Send Submission"; 
+                    btn.style.backgroundColor = "#22c55e";
+                }, 3000);
+            })
+            .catch(error => {
+                btn.innerText = "Error! Try Again.";
+                btn.style.backgroundColor = "#ef4444"; 
+            });
+        });
+    </script>
+
+    
+
+</body>
+</html>

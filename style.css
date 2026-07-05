@@ -1,0 +1,776 @@
+/* =========================================
+   1. GLOBAL STYLES & BACKGROUND
+   ========================================= */
+body {
+    background-image: url('https://pbs.twimg.com/media/GHCKEKUWMAAf9rS.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #eeeeee; /* Light text for readability on dark backgrounds */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0; 
+}
+
+/* =========================================
+   3. THE MAIN LAYOUT (Single Column Centered)
+   ========================================= */
+.main-layout {
+    display: flex; 
+    justify-content: center; /* Centers the content horizontally */
+    max-width: 900px; /* Reduced from 1200px so the cards look focused and proportional */
+    margin: 40px auto; /* Adds top/bottom space and centers the container */
+    padding: 0 20px; 
+}
+
+.list-column {
+    width: 100%; /* Forces the list to take up the full centered space */
+}
+
+/* =========================================
+   4. THE CHALLENGE CARDS
+   ========================================= */
+
+/* THE MAIN CARD CONTAINER (Restored!) */
+.pointercrate-card {
+    background-color: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: blur(8px); 
+    border: 1px solid #555555; 
+    border-top: 4px solid #22c55e; /* Signature green accent */
+    border-radius: 8px; 
+    display: flex; /* THIS forces the image and text side-by-side! */
+    align-items: center; /* Vertically centers the text with the image */
+    margin-bottom: 20px;
+    padding: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+}
+
+/* THE CLICKABLE IMAGE WRAPPER */
+.card-link-wrapper {
+    display: block;
+    overflow: hidden; 
+    border-radius: 4px;
+    margin-right: 20px;
+    flex-shrink: 0; /* Stops the image from squishing */
+}
+
+/* THE IMAGE SETTINGS */
+.card-thumb {
+    width: 250px;
+    height: 140px;
+    object-fit: cover; 
+    transition: transform 0.3s ease; 
+    display: block; 
+}
+
+/* THE IMAGE HOVER EFFECT */
+.card-link-wrapper:hover .card-thumb {
+    transform: scale(1.05); /* Satisfying smooth zoom when hovering! */
+}
+
+/* THE TEXT CONTAINER */
+.card-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+}
+
+/* THE CLICKABLE TITLE SETTINGS */
+.card-text h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.8rem;
+}
+
+.card-text p {
+    margin: 2px 0;
+    color: #cccccc; 
+}
+
+.game-title-link {
+    color: #ffffff;
+    text-decoration: none; /* Removes the raw blue HTML underline */
+    transition: color 0.2s ease;
+}
+
+.game-title-link:hover {
+    color: #22c55e; /* Turns green on hover */
+}
+
+.points-text {
+    color: #22c55e; 
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* =========================================
+   5. THE SIDEBAR BOX
+   ========================================= */
+.sidebar-box {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid #555555;
+    border-top: 4px solid #5865F2; /* Discord blurple accent for editors */
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    color: #eeeeee;
+}
+    
+/* =========================================
+   6. TIER DROPDOWNS (ACCORDION)
+   ========================================= */
+.tier-section {
+    margin-bottom: 20px;
+}
+
+.tier-toggle {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 18px 25px;
+    border: 1px solid #555555;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Hover effect */
+.tier-toggle:hover {
+    border-color: #22c55e;
+}
+
+/* When the dropdown is OPEN */
+.tier-toggle.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 1px solid transparent; /* Blends into the box below */
+}
+
+/* The Plus/Cross Icon */
+.toggle-icon {
+    font-size: 2rem;
+    font-weight: normal;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Turns the + into an X when open */
+.tier-toggle.active .toggle-icon {
+    transform: rotate(45deg);
+    color: #ef4444; /* Turns red to indicate 'close' */
+}
+
+/* The Hidden Container */
+.tier-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out; /* Super smooth sliding animation */
+    background-color: rgba(0, 0, 0, 0.3); /* Slightly darker inner box */
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #555555;
+    border-top: none;
+}
+
+.tier-content-inner {
+    padding: 20px;
+}
+
+/* =========================================
+   6.1 TIER COLOR SYSTEM
+   ========================================= */
+
+/* TIER 0: GREEN */
+.tier-0 .tier-toggle { border-left: 5px solid #22c55e; }
+.tier-0 .tier-toggle:hover { background-color: rgba(34, 197, 94, 0.15); border-color: #22c55e; }
+.tier-0 .tier-content { border-left: 5px solid #22c55e; }
+.tier-0 .toggle-icon { color: #22c55e; } 
+.tier-0 .pointercrate-card { border-top-color: #22c55e; } /* CARD ACCENT */
+
+/* TIER 1: BLUE */
+.tier-1 .tier-toggle { border-left: 5px solid #cfe2f3; }
+.tier-1 .tier-toggle:hover { background-color: rgba(234, 179, 8, 0.15); border-color: #cfe2f3; }
+.tier-1 .tier-content { border-left: 5px solid #cfe2f3; }
+.tier-1 .toggle-icon { color: #cfe2f3; }
+.tier-1 .pointercrate-card { border-top-color: #cfe2f3; } /* CARD ACCENT */
+
+/* TIER 2: Purple */
+.tier-2 .tier-toggle { border-left: 5px solid #BA7FF5; }
+.tier-2 .tier-toggle:hover { background-color: rgba(249, 115, 22, 0.15); border-color: #BA7FF5; }
+.tier-2 .tier-content { border-left: 5px solid #BA7FF5; }
+.tier-2 .toggle-icon { color: #BA7FF5; }
+.tier-2 .pointercrate-card { border-top-color: #BA7FF5; } /* CARD ACCENT */
+
+/* TIER 3: RED */
+.tier-3 .tier-toggle { border-left: 5px solid #ef4444; }
+.tier-3 .tier-toggle:hover { background-color: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+.tier-3 .tier-content { border-left: 5px solid #ef4444; }
+.tier-3 .toggle-icon { color: #ef4444; }
+.tier-3 .pointercrate-card { border-top-color: #ef4444; } /* CARD ACCENT */
+
+/* TIER 4: DARK GREEN */
+.tier-4 .tier-toggle { border-left: 5px solid #274E13; }
+.tier-4 .tier-toggle:hover { background-color: rgba(168, 85, 247, 0.15); border-color: #274E13; }
+.tier-4 .tier-content { border-left: 5px solid #274E13; }
+.tier-4 .toggle-icon { color: #274E13; }
+.tier-4 .pointercrate-card { border-top-color: #274E13; } /* CARD ACCENT */
+
+/* Keeps the X icon red when ANY tier is opened */
+.tier-toggle.active .toggle-icon {
+    color: #ef4444 !important; 
+}
+
+/* =========================================
+   7. HOME PAGE (Landing Screen & Layout)
+   ========================================= */
+.home-body {
+    background-image: url('https://pbs.twimg.com/media/GHCKEKUWMAAf9rS.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* This makes the background stay still while you scroll! Super clean effect. */
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* This is just the top full-screen part */
+.home-hero {
+    height: 100vh; 
+    display: flex;
+    flex-direction: column; /* THIS IS NEW: Forces the logo and box to stack vertically */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* THE NEW LOGO STYLING */
+.hero-logo {
+    width: 180px; /* Slightly larger */
+    height: 180px;
+    border-radius: 24px; /* Softened a bit more for the larger size */
+    margin-bottom: -90px; /* Negative margin pulls the box up by exactly half the logo's height */
+    position: relative; 
+    z-index: 10; /* Ensures the logo stays on top of the frosted box */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); 
+}
+
+.landing-container {
+    background-color: rgba(0, 0, 0, 0.7); 
+    /* Padding is: top right bottom left */
+    padding: 100px 60px 60px 60px; /* Increased top padding to make room for the overlapping logo */
+    border-radius: 12px;
+    border: 1px solid #555555;
+    backdrop-filter: blur(8px);
+}
+
+.landing-container h1 {
+    font-size: 4rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.landing-container p {
+    font-size: 1.5rem;
+    color: #cccccc;
+    margin-bottom: 40px;
+}
+
+/* The cool angled ribbon in the top right corner */
+.info-badge {
+    position: absolute;
+    top: 25px;
+    right: -35px;
+    background-color: #22c55e;
+    color: #111111;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 6px 40px;
+    transform: rotate(45deg);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
+}
+
+.info-content h2 {
+    font-size: 2.2rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info-content p {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: #cccccc;
+    margin: 0;
+}
+
+/* =========================================
+   8. HOME PAGE RULES SECTION
+   ========================================= */
+.rules-section {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 20px 100px 20px; /* Padding at the bottom so it doesn't hug the screen edge */
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap; /* If the screen gets too small, they stack on top of each other automatically */
+}
+
+.rule-card {
+    background-color: rgba(0, 0, 0, 0.85); /* Dark, semi-transparent box */
+    color: #eeeeee;
+    padding: 30px;
+    border-radius: 8px;
+    border-top: 4px solid #22c55e; /* Green accent line at the top */
+    flex: 1; /* Makes both boxes take up equal space */
+    min-width: 300px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.rule-card h2 {
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0;
+    border-bottom: 1px solid #444444;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.rule-card ul {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.rule-card li {
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+}
+
+.discord-link {
+    color: #5865F2; /* Official Discord blurple color */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.discord-link:hover {
+    text-decoration: underline;
+    color: #7289da;
+}
+
+.list-info-title {
+    width: 100%; /* Forces the title to take up the whole top row */
+    text-align: center;
+    color: #ffffff;
+    font-size: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: 0;
+    margin-bottom: 20px; /* Pushes the cards down a bit */
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Gives it a slight glow against the background */
+}
+/* =========================================
+   9. TOP NAVIGATION BAR
+   ========================================= */
+.top-navbar {
+    background-color: rgba(0, 0, 0, 0.8); 
+    backdrop-filter: blur(10px); 
+    width: 100%;
+    box-sizing: border-box; /* Ensures the padding doesn't make the bar stretch past the screen */
+    border-bottom: 1px solid #444444; 
+    display: flex;
+    justify-content: space-between; /* Pushes the brand to the left and links to the right */
+    align-items: center; /* Vertically centers the text and buttons */
+    padding: 15px 50px; /* Gives nice breathing room on the left and right edges */
+    position: sticky;
+    top: 0;
+    z-index: 100; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
+}
+
+/* THE NEW TITLE ON THE LEFT */
+.nav-brand {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px; 
+}
+
+.nav-btn {
+    text-decoration: none; 
+    color: #aaaaaa; 
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding-bottom: 5px;
+    transition: color 0.2s ease; 
+}
+
+.nav-btn:hover {
+    color: #22c55e; 
+}
+
+.nav-btn.active {
+    color: #ffffff; /* Crisp white for active page */
+    border-bottom: 3px solid #22c55e; 
+}
+
+/* =========================================
+   10. FOOTER
+   ========================================= */
+.site-footer {
+    width: 100%;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.5); /* Subtle dark band at the very bottom */
+    backdrop-filter: blur(5px);
+    border-top: 1px solid #333333;
+}
+
+.site-footer p {
+    color: #888888; /* Dim gray so it doesn't distract from the main content */
+    font-size: 0.85rem; /* Small text */
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* =========================================
+   11. SUBMISSION PAGE
+   ========================================= */
+.submit-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid #555555;
+    border-top: 4px solid #22c55e;
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 600px; /* Keeps the form from stretching too wide on PC */
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.submit-container h2 {
+    margin-top: 0;
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.submit-container p {
+    color: #cccccc;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: #eeeeee;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+/* The input text boxes */
+.form-group input {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #555555;
+    border-radius: 6px;
+    padding: 15px;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+    font-family: inherit; /* Matches your site's font */
+}
+
+/* When the user clicks on an input box */
+.form-group input:focus {
+    border-color: #22c55e;
+}
+
+/* The big green submit button */
+.submit-btn {
+    background-color: #22c55e;
+    color: #111111;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.submit-btn:hover {
+    background-color: #1ea34d; /* Slightly darker green on hover */
+}
+
+.submit-btn:active {
+    transform: scale(0.98); /* Satisfying "click" press animation */
+}
+
+/* =========================================
+   11.1 CHECKBOX DESIGN
+   ========================================= */
+.form-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 25px 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.form-checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #22c55e; /* Automatically styles the inner checkmark green */
+    cursor: pointer;
+}
+
+.form-checkbox-group label {
+    color: #eeeeee;
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none; /* Prevents accidental blue text highlighting on click */
+}
+
+/* =========================================
+   12. LEADERBOARD PAGE
+   ========================================= */
+.leaderboard-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid #555555;
+    border-top: 4px solid #22c55e;
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 800px; /* Slightly wider than the submit form */
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.leaderboard-container h2 {
+    margin-top: 0;
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.leaderboard-container p {
+    color: #cccccc;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    
+    /* THE NEW SCROLL UPGRADE */
+    max-height: 600px; /* Locks the box height */
+    overflow-y: auto; /* Adds a scrollbar if there are too many players */
+    padding-right: 15px; /* Gives the scrollbar some breathing room */
+}
+
+/* CUSTOM SCROLLBAR DESIGN */
+.leaderboard-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leaderboard-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb {
+    background: #555555;
+    border-radius: 4px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb:hover {
+    background: #22c55e; /* Turns signature green when they grab it! */
+}
+
+/* Base Player Card */
+.player-card {
+    display: flex;
+    flex-direction: column; /* Stacks the summary on top of details */
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #444444;
+    border-radius: 8px;
+    overflow: hidden; /* Keeps the slide animation clean */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.player-card:hover {
+    border-color: #777777;
+}
+
+/* The Clickable Top Row */
+/* Base Player Card */
+.player-card {
+    display: flex;
+    flex-direction: column; /* Stacks the top row ABOVE the hidden stats */
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #444444;
+    border-radius: 8px;
+    overflow: hidden; 
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0; /* Keeps the cards from squishing */
+}
+
+/* The Clickable Top Row */
+.player-summary {
+    display: flex; /* This is the magic rule that puts them side-by-side */
+    flex-direction: row; /* Forces the Rank, Name, and Score into a horizontal line */
+    justify-content: space-between; /* Pushes Rank left, Name middle, Score right */
+    align-items: center; /* Vertically centers the text */
+    padding: 15px 25px; 
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
+}
+
+.player-summary:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* Slight highlight when hovering */
+}
+
+.player-rank {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #888888;
+    width: 50px;
+    text-align: left;
+}
+
+.player-name {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.player-score {
+    font-size: 1.2rem;
+    color: #22c55e;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* The Hidden Stats Dropdown */
+.player-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid transparent;
+}
+
+.player-card.active .player-details {
+    border-top-color: #444444; /* Adds a line when opened */
+}
+
+/* Turns the + into an X when open */
+.player-card.active .toggle-icon {
+    transform: rotate(45deg);
+    color: #ef4444; 
+}
+
+.details-inner {
+    padding: 20px 25px;
+    display: flex;
+    flex-wrap: wrap; /* Allows them to wrap to a new line on phones */
+    gap: 10px;
+}
+
+.tier-stat {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid #555555;
+    color: #cccccc;
+    font-size: 0.95rem;
+    flex-grow: 1; /* Makes the boxes stretch evenly */
+    text-align: center;
+}
+
+.tier-stat strong {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-left: 5px;
+}
+
+/* Tier Dot Colors */
+.t-0 { color: #22c55e; }
+.t-1 { color: #cfe2f3; }
+.t-2 { color: #BA7FF5; }
+.t-3 { color: #ef4444; }
+.t-4 { color: #274E13; }
+
+/* 🥇 GOLD (Rank 1) */
+.player-card.rank-1 {
+    border-color: #fbbf24;
+    background-color: rgba(251, 191, 36, 0.1);
+}
+.player-card.rank-1 .player-rank, .player-card.rank-1 .player-score { color: #fbbf24; }
+
+/* 🥈 SILVER (Rank 2) */
+.player-card.rank-2 {
+    border-color: #94a3b8;
+    background-color: rgba(148, 163, 184, 0.1);
+}
+.player-card.rank-2 .player-rank, .player-card.rank-2 .player-score { color: #94a3b8; }
+
+/* 🥉 BRONZE (Rank 3) */
+.player-card.rank-3 {
+    border-color: #b45309;
+    background-color: rgba(180, 83, 9, 0.1);
+}
+.player-card.rank-3 .player-rank, .player-card.rank-3 .player-score { color: #b45309; }
