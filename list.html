@@ -4,21 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultra Random Challenge List</title>
-    
-    <!-- The link to your CSS file MUST go inside the <head> -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- 🟢 THE TOP NAVIGATION BAR -->
 <nav class="top-navbar">
         <div class="nav-brand">Roblox Ranked Challenges List</div>
         
 <div class="nav-links">
-            <a href="./" class="nav-btn active">Home</a>
-            
-            <a href="list" class="nav-btn">Main List</a>
-            <a href="leaderboard" class="nav-btn">Leaderboard</a>
-            <a href="submit" class="nav-btn">Submit</a>
+            <a href="index.html" class="nav-btn active">Home</a>
+            <a href="list.html" class="nav-btn">Main List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
         </div>
     </nav>
 
@@ -70,13 +66,10 @@
 
         toggles.forEach(toggle => {
             toggle.addEventListener('click', function() {
-                // Toggle the active class on the button
                 this.classList.toggle('active');
                 
-                // Get the hidden content right below the button
                 const content = this.nextElementSibling;
                 
-                // Slide open or closed
                 if (content.style.maxHeight) {
                     content.style.maxHeight = null; // Close it
                 } else {
@@ -87,7 +80,6 @@
     </script>
 
     <script>
-        // ⚠️ PASTE YOUR NEW CHALLENGES CSV LINK HERE ⚠️
         const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
 
         fetch(challengesCsvUrl)
@@ -101,17 +93,14 @@
                     const cols = row.split(',');
                     if (!cols[1] || cols[1].trim() === '') return; 
 
-                    // Grab data from the columns
                     const tier = cols[0].trim(); 
                     const title = cols[1].trim();
                     const image = cols[2].trim();
                     const challenge = cols[3].trim();
                     const points = cols[4].trim();
                     
-                    // 🆕 Grab the new Game Link (Column F)
                     const gameLink = cols[5] ? cols[5].trim() : '#'; 
 
-                    // 🆕 Build the HTML with the clickable <a> tags
                     const cardHtml = `
                         <div class="pointercrate-card">
                             <a href="${gameLink}" target="_blank" class="card-link-wrapper">
@@ -132,7 +121,6 @@
                     }
                 });
 
-                // Attach the click animations AFTER the cards are loaded
                 attachAccordionLogic();
             })
             .catch(error => {
@@ -143,7 +131,6 @@
         function attachAccordionLogic() {
             const toggles = document.querySelectorAll('.tier-toggle');
             toggles.forEach(toggle => {
-                // Remove old event listeners to prevent double-clicking bugs
                 const newToggle = toggle.cloneNode(true);
                 toggle.parentNode.replaceChild(newToggle, toggle);
                 
