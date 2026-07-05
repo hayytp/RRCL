@@ -11,8 +11,8 @@
         <div class="nav-brand">Roblox Ranked Challenges List</div>
         
 <div class="nav-links">
-            <a href="index.html" class="nav-btn active">Home</a>
-            <a href="list.html" class="nav-btn">Main List</a>
+            <a href="index.html" class="nav-btn">Home</a>
+            <a href="list.html" class="nav-btn active">Main List</a>
             <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
             <a href="submit.html" class="nav-btn">Submit</a>
         </div>
@@ -58,6 +58,20 @@
                 </div>
             </div>
 
+            <div class="tier-section tier-5">
+                <button class="tier-toggle">Tier 5 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-5-list"></div>
+                </div>
+            </div>
+
+            <div class="tier-section tier-6">
+                <button class="tier-toggle">Tier 6 <span class="toggle-icon">+</span></button>
+                <div class="tier-content">
+                    <div class="tier-content-inner" id="tier-6-list"></div>
+                </div>
+            </div>
+
         </div>
 </div>
         <!-- ACCORDION SCRIPT -->
@@ -71,34 +85,40 @@
                 const content = this.nextElementSibling;
                 
                 if (content.style.maxHeight) {
-                    content.style.maxHeight = null; // Close it
+                    content.style.maxHeight = null;
                 } else {
-                    content.style.maxHeight = content.scrollHeight + "px"; // Open it exactly to the height of the cards inside
+                    content.style.maxHeight = content.scrollHeight + "px"; 
                 }
             });
         });
     </script>
 
-    <script>
+<script>
         const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
 
         fetch(challengesCsvUrl)
             .then(response => response.text())
             .then(data => {
                 const rows = data.split('\n').slice(1); 
+                
+                const tierBuckets = {
+                    '0': '', '1': '', '2': '', '3': '', '4': '', '5': '', '6': ''
+                };
 
                 rows.forEach(row => {
                     if (!row.trim()) return; 
-
+                    
                     const cols = row.split(',');
                     if (!cols[1] || cols[1].trim() === '') return; 
 
-                    const tier = cols[0].trim(); 
+                    let rawTier = cols[0].replace(/[^0-6]/g, '');
+                    if (rawTier === '') return; 
+                    const tier = rawTier[0]; 
+
                     const title = cols[1].trim();
                     const image = cols[2].trim();
                     const challenge = cols[3].trim();
                     const points = cols[4].trim();
-                    
                     const gameLink = cols[5] ? cols[5].trim() : '#'; 
 
                     const cardHtml = `
@@ -114,12 +134,17 @@
                         </div>
                     `;
 
-                    // Find the matching tier box and drop the card inside
-                    const targetContainer = document.getElementById(`tier-${tier}-list`);
-                    if (targetContainer) {
-                        targetContainer.innerHTML += cardHtml;
+                    if (tierBuckets[tier] !== undefined) {
+                        tierBuckets[tier] += cardHtml;
                     }
                 });
+
+                for (let i = 0; i <= 6; i++) {
+                    const targetContainer = document.getElementById(`tier-${i}-list`);
+                    if (targetContainer) {
+                        targetContainer.innerHTML = tierBuckets[i];
+                    }
+                }
 
                 attachAccordionLogic();
             })
@@ -127,7 +152,6 @@
                 console.error("Error loading challenges:", error);
             });
 
-        // The Accordion Logic
         function attachAccordionLogic() {
             const toggles = document.querySelectorAll('.tier-toggle');
             toggles.forEach(toggle => {

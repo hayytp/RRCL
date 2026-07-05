@@ -8,14 +8,13 @@
 </head>
 <body>
 
-    <!-- 🟢 THE TOP NAVIGATION BAR -->
     <nav class="top-navbar">
         <div class="nav-brand">Roblox Ranked Challenges List</div>
 <div class="nav-links">
-            <a href="index.html" class="nav-btn active">Home</a>
+            <a href="index.html" class="nav-btn">Home</a>
             <a href="list.html" class="nav-btn">Main List</a>
             <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
-            <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="submit.html" class="nav-btn active">Submit</a>
         </div>
     </nav>
 
@@ -25,7 +24,6 @@
             <h2>Submit a Record</h2>
             <p>submit.  </p>
             
-            <!-- We will attach the Google Sheets hookup to this ID later -->
             <form id="rrcl-submit-form">
                 
                 <div class="form-group">
@@ -54,11 +52,12 @@
         </div>
     </div>
 
-    <!-- THE GOOGLE SHEETS HOOKUP SCRIPT -->
     <script>
-        // Cool UI Trick: Changes placeholder text when checkbox is toggled
         const multipleCheckbox = document.getElementById('multiple-subs');
         const challengeInput = document.getElementById('challenge-name');
+        const submitBtn = document.querySelector('.submit-btn');
+
+        const COOLDOWN_TIME = 120000; 
 
         multipleCheckbox.addEventListener('change', function() {
             if (this.checked) {
@@ -68,22 +67,40 @@
             }
         });
 
+        function checkCooldown() {
+            const lastSubTime = localStorage.getItem('rrcl_last_submission');
+            if (lastSubTime) {
+                const timePassed = Date.now() - parseInt(lastSubTime);
+                if (timePassed < COOLDOWN_TIME) {
+                    const timeLeft = Math.ceil((COOLDOWN_TIME - timePassed) / 60000); // Convert to minutes
+                    submitBtn.innerText = `On Cooldown (${timeLeft}m left)`;
+                    submitBtn.style.backgroundColor = "#555555";
+                    submitBtn.disabled = true; // Locks the button completely
+                    submitBtn.style.cursor = "not-allowed";
+                    return true; // They are on cooldown
+                }
+            }
+            return false;
+        }
+
+        checkCooldown();
+
         // Handle Form Submission
         document.getElementById('rrcl-submit-form').addEventListener('submit', function(e) {
             e.preventDefault(); 
 
-            const btn = document.querySelector('.submit-btn');
-            btn.innerText = "Sending..."; 
+            if (checkCooldown()) return; 
 
-            // Collect data including the True/False state of the checkbox
+            submitBtn.innerText = "Sending..."; 
+            submitBtn.disabled = true;
+
             const formData = {
                 'roblox-name': document.getElementById('roblox-name').value,
                 'challenge-name': document.getElementById('challenge-name').value,
                 'video-link': document.getElementById('video-link').value,
-                'is-multiple': multipleCheckbox.checked // This will be true or false
+                'is-multiple': multipleCheckbox.checked 
             };
 
-            // ⚠️ YOUR SCRIPT URL GOES HERE ⚠️
             const scriptURL = 'https://script.google.com/macros/s/AKfycbz4N5_pdVNMEI7UCutV6EOvTVipXVq2grhnzrPATfCLyUzJs6FjT6pAiHqnF5CMKPLs/exec';
 
             fetch(scriptURL, {
@@ -93,19 +110,21 @@
                 body: JSON.stringify(formData)
             })
             .then(response => {
-                btn.innerText = "Submitted! ✅";
-                btn.style.backgroundColor = "#1ea34d"; 
+                submitBtn.innerText = "Submitted!";
+                submitBtn.style.backgroundColor = "#1ea34d"; 
                 document.getElementById('rrcl-submit-form').reset(); 
-                challengeInput.placeholder = "e.g. DOORS"; // Reset placeholder
+                challengeInput.placeholder = "e.g. DOORS"; 
+                
+                localStorage.setItem('rrcl_last_submission', Date.now());
                 
                 setTimeout(() => { 
-                    btn.innerText = "Send Submission"; 
-                    btn.style.backgroundColor = "#22c55e";
+                    checkCooldown(); 
                 }, 3000);
             })
             .catch(error => {
-                btn.innerText = "Error! Try Again.";
-                btn.style.backgroundColor = "#ef4444"; 
+                submitBtn.innerText = "Error! Try Again.";
+                submitBtn.style.backgroundColor = "#ef4444"; 
+                submitBtn.disabled = false;
             });
         });
     </script>
