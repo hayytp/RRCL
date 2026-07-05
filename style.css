@@ -526,7 +526,7 @@ body {
     font-size: 1rem;
     outline: none;
     transition: border-color 0.3s ease;
-    font-family: inherit; /* Matches your site's font */
+    font-family: inherit;
 }
 
 /* When the user clicks on an input box */
@@ -556,7 +556,7 @@ body {
 }
 
 .submit-btn:active {
-    transform: scale(0.98); /* Satisfying "click" press animation */
+    transform: scale(0.98);
 }
 
 /* =========================================
@@ -624,7 +624,7 @@ body {
     /* THE NEW SCROLL UPGRADE */
     max-height: 600px; /* Locks the box height */
     overflow-y: auto; /* Adds a scrollbar if there are too many players */
-    padding-right: 15px; /* Gives the scrollbar some breathing room */
+    padding-right: 15px; 
 }
 
 /* CUSTOM SCROLLBAR DESIGN */
@@ -643,7 +643,7 @@ body {
 }
 
 .leaderboard-list::-webkit-scrollbar-thumb:hover {
-    background: #22c55e; /* Turns signature green when they grab it! */
+    background: #22c55e;
 }
 
 /* Base Player Card */
@@ -739,7 +739,8 @@ body {
 .details-inner {
     padding: 20px 25px;
     display: flex;
-    flex-wrap: wrap; /* Allows them to wrap to a new line on phones */
+    flex-wrap: wrap; 
+    justify-content: center; /* THIS centers the boxes if they wrap to a new line */
     gap: 10px;
 }
 
@@ -750,7 +751,7 @@ body {
     border: 1px solid #555555;
     color: #cccccc;
     font-size: 0.95rem;
-    flex-grow: 1; /* Makes the boxes stretch evenly */
+    min-width: 100px;
     text-align: center;
 }
 
@@ -766,24 +767,97 @@ body {
 .t-2 { color: #BA7FF5; }
 .t-3 { color: #ef4444; }
 .t-4 { color: #274E13; }
+.t-5 { color: #073763; } 
+.t-6 { color: #351c75; } 
 
-/* 🥇 GOLD (Rank 1) */
 .player-card.rank-1 {
     border-color: #fbbf24;
     background-color: rgba(251, 191, 36, 0.1);
 }
 .player-card.rank-1 .player-rank, .player-card.rank-1 .player-score { color: #fbbf24; }
 
-/* 🥈 SILVER (Rank 2) */
 .player-card.rank-2 {
     border-color: #94a3b8;
     background-color: rgba(148, 163, 184, 0.1);
 }
 .player-card.rank-2 .player-rank, .player-card.rank-2 .player-score { color: #94a3b8; }
 
-/* 🥉 BRONZE (Rank 3) */
 .player-card.rank-3 {
     border-color: #b45309;
     background-color: rgba(180, 83, 9, 0.1);
 }
 .player-card.rank-3 .player-rank, .player-card.rank-3 .player-score { color: #b45309; }
+
+/* =========================================
+   13. MOBILE RESPONSIVENESS (THE FINAL DANCE)
+   ========================================= */
+
+@media (max-width: 768px) {
+    /* 1. Fix the Navigation Bar */
+    .top-navbar {
+        flex-direction: column; /* Stacks the title above the links */
+        padding: 15px;
+        gap: 15px;
+    }
+    .nav-links {
+        gap: 15px;
+        flex-wrap: wrap; /* Lets the buttons wrap to a new line if needed */
+        justify-content: center;
+    }
+    .nav-btn {
+        font-size: 0.9rem; /* Slightly smaller text so they fit */
+    }
+
+    /* 2. Fix the Challenge Cards */
+    .pointercrate-card {
+        flex-direction: column; /* Stacks the image ON TOP of the text */
+        text-align: center;
+        padding: 15px;
+    }
+    .card-link-wrapper {
+        margin: 0 0 15px 0; /* Moves the empty space from the right side to the bottom */
+        width: 100%;
+    }
+    .card-thumb {
+        width: 100%; /* Makes the image stretch beautifully across the phone screen */
+        height: auto;
+    }
+
+    /* 3. Fix the Home Page Hero Section */
+    .landing-container {
+        padding: 80px 20px 30px 20px; /* Shrinks the massive padding */
+    }
+    .landing-container h1 {
+        font-size: 2.2rem; /* Stops the title from bleeding off the screen */
+    }
+    .landing-container p {
+        font-size: 1.1rem;
+    }
+    .hero-logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: -60px;
+    }
+    .info-badge {
+        display: none; /* Hides the diagonal ribbon on phones so it doesn't break the layout */
+    }
+
+    /* 4. Fix the Leaderboard */
+    .player-summary {
+        padding: 15px;
+    }
+    .player-rank {
+        font-size: 1.2rem;
+        width: 35px;
+    }
+    .player-name {
+        font-size: 1.1rem;
+    }
+    .player-score {
+        font-size: 1rem;
+        gap: 8px;
+    }
+    .tier-stat {
+        width: 100%; /* Forces the stat boxes to stack cleanly into a column on tiny screens */
+    }
+}

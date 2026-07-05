@@ -52,6 +52,8 @@
                     const t2 = cols[5] || 0;
                     const t3 = cols[6] || 0;
                     const t4 = cols[7] || 0;
+                    const t5 = cols[8] || 0; // Grabs Tier 5 column
+                    const t6 = cols[9] || 0; // Grabs Tier 6 column
 
                     let displayName = name;
                     let opacityStyle = "";
@@ -65,6 +67,7 @@
                     else if (rank === '2' || rank === '#2') rankClass = 'rank-2';
                     else if (rank === '3' || rank === '#3') rankClass = 'rank-3';
 
+// Builds the card
                     const playerCard = `
                         <div class="player-card ${rankClass}" ${opacityStyle}>
                             <div class="player-summary">
@@ -79,6 +82,8 @@
                                     <div class="tier-stat"><span class="t-dot t-2">●</span> Tier 2: <strong>${t2}</strong></div>
                                     <div class="tier-stat"><span class="t-dot t-3">●</span> Tier 3: <strong>${t3}</strong></div>
                                     <div class="tier-stat"><span class="t-dot t-4">●</span> Tier 4: <strong>${t4}</strong></div>
+                                    <div class="tier-stat"><span class="t-dot t-5">●</span> Tier 5: <strong>${t5}</strong></div>
+                                    <div class="tier-stat"><span class="t-dot t-6">●</span> Tier 6: <strong>${t6}</strong></div>
                                 </div>
                             </div>
                         </div>
