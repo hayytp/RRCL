@@ -1006,7 +1006,6 @@ body {
    16. CUSTOM SUBMIT FORM ELEMENTS
    ========================================= */
 
-/* Native Select Input Styling */
 .form-group select, .form-group textarea {
     background-color: rgba(0, 0, 0, 0.5);
     border: 1px solid #555555;
