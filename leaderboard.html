@@ -11,11 +11,11 @@
     <nav class="top-navbar">
         <div class="nav-brand">Roblox Ranked Challenges List</div>
         <div class="nav-links">
-            <a href="./" class="nav-btn">Home</a>
-            <a href="list" class="nav-btn">The List</a>
-            <a href="leaderboard" class="nav-btn active">Leaderboard</a>
-            <a href="update" class="nav-btn">Live Feed</a>
-            <a href="submit" class="nav-btn">Submit</a>
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn">The List</a>
+            <a href="leaderboard.html" class="nav-btn active">Leaderboard</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
         </div>
     </nav>
 
@@ -30,19 +30,17 @@
         </div>
     </div>
 
-    <script>
-        // We fetch BOTH lists to cross-reference the games with their tiers
-        const playersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHILLb1CTdxro6zyl73KXNxqA6f1ZXgjY6fz9LoUylWCt1ln_nEpsyeFW877ewAUA0qtYdVCGe4gXy/pub?gid=0&single=true&output=csv';
+        <script>
+        const playersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHILLb1CTdxro6zyl73KXNxqA6f1ZXgjY6fz9LoUylWCt1ln_nEpsyeFW877ewAUA0qtYdVCGe4gXy/pub?gid=858441458&single=true&output=csv';
         const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
 
         let gameTierMap = {}; 
+        const sanitizeForMatch = (str) => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
         Promise.all([
             fetch(challengesCsvUrl).then(res => res.text()),
             fetch(playersCsvUrl).then(res => res.text())
         ]).then(([challengesData, playersData]) => {
-            
-            // 1. Build the Dictionary (Which game is in which tier?)
             const challengeRows = challengesData.split('\n').slice(1);
             challengeRows.forEach(row => {
                 if (!row.trim()) return;
@@ -51,76 +49,98 @@
 
                 let rawTier = cols[0].replace(/[^0-6]/g, '');
                 if (rawTier === '') return;
-                
-                const title = cols[1].trim().replace(/^"|"$/g, '').toLowerCase(); // lowercase for accurate checking
-                gameTierMap[title] = rawTier[0];
+
+                const title = cols[1].replace(/^"|"$/g, ''); 
+                gameTierMap[sanitizeForMatch(title)] = rawTier[0];
             });
 
-            // 2. Build the Leaderboard Cards
             const playerRows = playersData.split('\n').slice(1);
-            const leaderboardContainer = document.getElementById('dynamic-leaderboard');
-            leaderboardContainer.innerHTML = ''; 
+            let playerMap = {}; 
 
             playerRows.forEach(row => {
                 if (!row.trim()) return; 
-                
-                // Safe split to avoid comma bugs
                 const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if (!cols[1] || cols[1].trim() === '') return; 
-
-                const rank = cols[0].replace(/^"|"$/g, '');
-                const name = cols[1].replace(/^"|"$/g, '');
-                const total = cols[2].replace(/^"|"$/g, '');
-                const t0 = cols[3] || 0;
-                const t1 = cols[4] || 0;
-                const t2 = cols[5] || 0;
-                const t3 = cols[6] || 0;
-                const t4 = cols[7] || 0;
-                const t5 = cols[8] || 0;
-                const t6 = cols[9] || 0;
                 
-                // Grabs the massive string of all their games from Column K
-                const allGames = cols[10] ? cols[10].replace(/^"|"$/g, '') : '';
-
-                let displayName = name;
-                let opacityStyle = "";
-                if (name.trim() === "N/A") {
-                    displayName = "<i style='color: #777777;'>[ Open Spot ]</i>";
-                    opacityStyle = "style='opacity: 0.4;'"; 
-                }
-
-                let rankClass = '';
-                if (rank === '1' || rank === '#1') rankClass = 'rank-1';
-                else if (rank === '2' || rank === '#2') rankClass = 'rank-2';
-                else if (rank === '3' || rank === '#3') rankClass = 'rank-3';
-
-                const playerCard = `
-                    <div class="player-card ${rankClass}" ${opacityStyle} data-games="${allGames}">
-                        <div class="player-summary">
-                            <div class="player-rank">#${rank.replace('#', '')}</div>
-                            <div class="player-name">${displayName}</div>
-                            <div class="player-score">${total} Total <span class="toggle-icon">+</span></div>
-                        </div>
-                        <div class="player-details">
-                            <div class="details-inner">
-                                <div class="tier-stat tier-clickable" data-tier="0"><span class="t-dot t-0">●</span> Tier 0: <strong>${t0}</strong></div>
-                                <div class="tier-stat tier-clickable" data-tier="1"><span class="t-dot t-1">●</span> Tier 1: <strong>${t1}</strong></div>
-                                <div class="tier-stat tier-clickable" data-tier="2"><span class="t-dot t-2">●</span> Tier 2: <strong>${t2}</strong></div>
-                                <div class="tier-stat tier-clickable" data-tier="3"><span class="t-dot t-3">●</span> Tier 3: <strong>${t3}</strong></div>
-                                <div class="tier-stat tier-clickable" data-tier="4"><span class="t-dot t-4">●</span> Tier 4: <strong>${t4}</strong></div>
-                                <div class="tier-stat tier-clickable" data-tier="5"><span class="t-dot t-5">●</span> Tier 5: <strong>${t5}</strong></div>
-                                <div class="tier-stat tier-clickable" data-tier="6"><span class="t-dot t-6">●</span> Tier 6: <strong>${t6}</strong></div>
-                            </div>
-                            <div class="games-display-box"></div>
-                        </div>
-                    </div>
-                `;
+                if (!cols[0]) return; 
+                const name = cols[0].replace(/^"|"$/g, '');
                 
-                leaderboardContainer.innerHTML += playerCard;
+                const totalScore = parseInt(cols[2].replace(/^"|"$/g, '')) || 0;
+                const allGamesRaw = cols[10] ? cols[10].replace(/^"|"$/g, '') : '';
+
+                const allGames = allGamesRaw.split(',').map(g => g.replace(/^"|"$/g, '').trim()).filter(g => g !== '');
+                let tCounts = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0 };
+
+                allGames.forEach(game => {
+
+                    const tier = gameTierMap[sanitizeForMatch(game)];
+                    if (tier !== undefined) {
+                        tCounts[tier]++;
+                    }
+                });
+
+                playerMap[name] = {
+                    name: name,
+                    total: totalScore,
+                    t0: tCounts["0"], 
+                    t1: tCounts["1"], 
+                    t2: tCounts["2"], 
+                    t3: tCounts["3"], 
+                    t4: tCounts["4"], 
+                    t5: tCounts["5"], 
+                    t6: tCounts["6"],
+                    allGames: allGamesRaw
+                };
             });
 
+            const leaderboardContainer = document.getElementById('dynamic-leaderboard');
+            leaderboardContainer.innerHTML = ''; 
+
+            let sortedPlayers = Object.values(playerMap)
+                .filter(p => p.name !== "N/A") 
+                .sort((a, b) => b.total - a.total);
+
+            for (let i = 0; i < 25; i++) {
+                const player = sortedPlayers[i];
+                const rank = i + 1;
+                
+                let rankClass = '';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+
+                const isEmpty = !player || player.name === "N/A";
+                const displayName = isEmpty ? "<i style='color: #777;'>[ Open Spot ]</i>" : player.name;
+                const displayScore = isEmpty ? "0 Total" : player.total + " Total";
+                const opacityStyle = isEmpty ? "style='opacity: 0.4;'" : "";
+                const gamesData = isEmpty ? "" : player.allGames;
+
+                const playerCard = `
+                    <div class="player-card ${rankClass}" ${opacityStyle} data-games="${gamesData}">
+                        <div class="player-summary">
+                            <div class="player-rank">#${rank}</div>
+                            <div class="player-name">${displayName}</div>
+                            <div class="player-score">${displayScore} ${!isEmpty ? "<span class='toggle-icon'>+</span>" : ""}</div>
+                        </div>
+                        ${!isEmpty ? `
+                        <div class="player-details">
+                            <div class="details-inner">
+                                <div class="tier-stat tier-clickable" data-tier="0"><span class="t-dot t-0">●</span> Tier 0: <strong>${player.t0}</strong></div>
+                                <div class="tier-stat tier-clickable" data-tier="1"><span class="t-dot t-1">●</span> Tier 1: <strong>${player.t1}</strong></div>
+                                <div class="tier-stat tier-clickable" data-tier="2"><span class="t-dot t-2">●</span> Tier 2: <strong>${player.t2}</strong></div>
+                                <div class="tier-stat tier-clickable" data-tier="3"><span class="t-dot t-3">●</span> Tier 3: <strong>${player.t3}</strong></div>
+                                <div class="tier-stat tier-clickable" data-tier="4"><span class="t-dot t-4">●</span> Tier 4: <strong>${player.t4}</strong></div>
+                                <div class="tier-stat tier-clickable" data-tier="5"><span class="t-dot t-5">●</span> Tier 5: <strong>${player.t5}</strong></div>
+                                <div class="tier-stat tier-clickable" data-tier="6"><span class="t-dot t-6">●</span> Tier 6: <strong>${player.t6}</strong></div>
+                            </div>
+                            <div class="games-display-box"></div>
+                        </div>` : ""}
+                    </div>
+                `;
+                leaderboardContainer.innerHTML += playerCard;
+            }
+
             attachAccordionLogic();
-            attachTierClickLogic(); // Hooks up the new clickable boxes
+            attachTierClickLogic();
 
         }).catch(error => {
             document.getElementById('dynamic-leaderboard').innerHTML = '<p style="color: #ef4444; text-align: center;">Error loading leaderboard data.</p>';
@@ -138,7 +158,6 @@
                     if (details.style.maxHeight) {
                         details.style.maxHeight = null;
                         
-                        // Hides the game list if they close the player card
                         setTimeout(() => {
                             card.querySelector('.games-display-box').style.display = 'none';
                             card.querySelectorAll('.tier-clickable').forEach(b => b.style.borderColor = "#555555");
@@ -153,13 +172,11 @@
 
         function attachTierClickLogic() {
             const tierBoxes = document.querySelectorAll('.tier-clickable');
-            
-            // Matches the colors from your style.css
             const tierColors = { "0": "#22c55e", "1": "#cfe2f3", "2": "#BA7FF5", "3": "#ef4444", "4": "#274E13", "5": "#073763", "6": "#351c75" };
 
             tierBoxes.forEach(box => {
                 box.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Stops the accordion from accidentally closing
+                    e.stopPropagation(); 
 
                     const tier = this.getAttribute('data-tier');
                     const card = this.closest('.player-card');
@@ -167,10 +184,7 @@
                     const displayBox = card.querySelector('.games-display-box');
                     const activeColor = tierColors[tier];
 
-                    // 1. Reset all box borders
                     card.querySelectorAll('.tier-clickable').forEach(b => b.style.borderColor = "#555555");
-                    
-                    // 2. Highlight the clicked box
                     this.style.borderColor = activeColor;
 
                     if (!allGamesRaw) {
@@ -179,9 +193,8 @@
                         return;
                     }
 
-                    // 3. Filter the games!
-                    const allGames = allGamesRaw.split(',').map(g => g.trim()).filter(g => g !== '');
-                    const matchedGames = allGames.filter(game => gameTierMap[game.toLowerCase()] === tier);
+                    const allGames = allGamesRaw.split(',').map(g => g.replace(/^"|"$/g, '').trim()).filter(g => g !== '');
+                    const matchedGames = allGames.filter(game => gameTierMap[sanitizeForMatch(game)] === tier);
 
                     if (matchedGames.length > 0) {
                         const listHtml = matchedGames.map(g => `<li>${g}</li>`).join('');
@@ -192,12 +205,50 @@
 
                     displayBox.style.display = 'block';
 
-                    // 4. Recalculate max-height so the new box fits inside the accordion
                     const details = card.querySelector('.player-details');
                     details.style.maxHeight = details.scrollHeight + "px";
                 });
             });
         }
-    </script>   
+    </script>
+
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const navAuthBtn = document.getElementById('nav-auth-btn');
+
+        if (navAuthBtn) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const fullNames = user.displayName || "Unknown||Player";
+                    const robloxName = fullNames.split("||")[0];
+                    
+                    navAuthBtn.innerText = robloxName;
+                    navAuthBtn.href = "profile.html"; 
+                    navAuthBtn.style.color = "#22c55e"; 
+
+                    if (!navAuthBtn.classList.contains('active')) {
+                        navAuthBtn.style.borderBottom = "2px solid #22c55e"; 
+                    }
+                } else {
+                    navAuthBtn.innerText = "Log In";
+                    navAuthBtn.href = "login.html";
+                }
+            });
+        }
+    </script>
 </body>
 </html>

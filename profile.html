@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - RRCL</title>
+    <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/e1/b3/0f/e1b30f0f9daeb7ab0da8e9c9564879a1.jpg">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-accordion-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            color: #fff;
+            width: 100%;
+            text-align: left;
+            padding: 0 0 10px 0;
+            font-size: 1.17rem;
+            font-weight: bold;
+            font-family: inherit;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.2s ease;
+        }
+        .profile-accordion-btn:hover { 
+            color: #22c55e; 
+        }
+        .profile-accordion-content {
+            display: none; 
+            padding-top: 15px;
+        }
+        .profile-accordion-content.show {
+            display: block;
+            animation: fadeInProfile 0.3s ease;
+        }
+        @keyframes fadeInProfile { 
+            from { opacity: 0; transform: translateY(-5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn">The List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="profile.html" class="nav-btn active" id="nav-auth-btn">Profile</a>
+        </div>
+    </nav>
+
+    <div class="main-layout">
+        <div class="submit-container" style="text-align: center; max-width: 700px;">
+            <h2 id="display-roblox" style="margin-bottom: 5px; font-size: 3rem;">Loading...</h2>
+            <p id="display-discord" style="color: #5865F2; font-weight: bold; font-size: 1.2rem; margin-top: 0;">Loading...</p>
+            
+            <!-- STATS BANNER -->
+            <div style="display: flex; justify-content: center; gap: 20px; margin: 25px 0;">
+                <div style="background-color: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; border-radius: 8px; padding: 15px 30px;">
+                    <p style="margin: 0; color: #22c55e; font-size: 0.9rem; text-transform: uppercase; font-weight: bold;">Global Rank</p>
+                    <p id="display-rank" style="margin: 5px 0 0 0; color: #fff; font-size: 2rem; font-weight: bold;">--</p>
+                </div>
+                <div style="background-color: rgba(255, 255, 255, 0.05); border: 1px solid #555; border-radius: 8px; padding: 15px 30px;">
+                    <p style="margin: 0; color: #ccc; font-size: 0.9rem; text-transform: uppercase; font-weight: bold;">Total Points</p>
+                    <p id="display-score" style="margin: 5px 0 0 0; color: #fff; font-size: 2rem; font-weight: bold;">--</p>
+                </div>
+            </div>
+
+            <div style="background-color: rgba(0,0,0,0.6); border: 1px solid #444; border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 30px;">
+                <button class="profile-accordion-btn" onclick="toggleProfileSection('games-content', this)">
+                    Completed Games <span class="toggle-icon">+</span>
+                </button>
+                
+                <div id="games-content" class="profile-accordion-content">
+                    <div id="display-games" style="color: #ccc; line-height: 1.8; margin: 0;">
+                        <p style="padding-left: 20px;">Loading your records...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: rgba(0,0,0,0.6); border: 1px solid #444; border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 30px;">
+                <button class="profile-accordion-btn" onclick="toggleProfileSection('subs-content', this)">
+                    Submission Status <span class="toggle-icon">+</span>
+                </button>
+                
+                <div id="subs-content" class="profile-accordion-content">
+                    <div id="display-submissions" style="color: #ccc; line-height: 1.8; margin: 0;">
+                        <p style="padding-left: 20px;">Loading your submissions...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: rgba(255, 255, 255, 0.03); border: 1px solid #444; border-radius: 8px; padding: 12px 18px; margin-bottom: 25px; color: #aaa; font-size: 0.9rem; text-align: center; backdrop-filter: blur(5px);">
+                <strong>Note:</strong> After submitting or having a record accepted/rejected, please allow <strong>2–3 minutes</strong> for player stats and data to stabilize and update here.
+            </div>
+
+            <button class="submit-btn" id="logout-btn" style="background-color: #ef4444; color: white; width: auto; padding: 10px 40px;">Log Out</button>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Elements
+        const robloxEl = document.getElementById('display-roblox');
+        const discordEl = document.getElementById('display-discord');
+        const rankEl = document.getElementById('display-rank');
+        const scoreEl = document.getElementById('display-score');
+        const gamesEl = document.getElementById('display-games');
+        const subsEl = document.getElementById('display-submissions');
+        const logoutBtn = document.getElementById('logout-btn');
+        const navAuthBtn = document.getElementById('nav-auth-btn');
+
+        const playersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHILLb1CTdxro6zyl73KXNxqA6f1ZXgjY6fz9LoUylWCt1ln_nEpsyeFW877ewAUA0qtYdVCGe4gXy/pub?gid=858441458&single=true&output=csv';
+        const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
+        const subsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHILLb1CTdxro6zyl73KXNxqA6f1ZXgjY6fz9LoUylWCt1ln_nEpsyeFW877ewAUA0qtYdVCGe4gXy/pub?gid=590373175&single=true&output=csv';
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const fullNames = user.displayName || "Unknown||Player";
+                const splitNames = fullNames.split("||");
+                const robloxName = splitNames[0];
+                const discordName = splitNames[1] || "No Discord Linked";
+
+                robloxEl.innerText = robloxName;
+                discordEl.innerText = "Discord: " + discordName;
+                navAuthBtn.innerText = robloxName;
+
+                fetchPlayerStats(robloxName);
+                
+                fetchSubmissions(robloxName);
+
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        function fetchSubmissions(playerName) {
+            const noCacheUrl = subsCsvUrl + '&t=' + new Date().getTime();
+
+            fetch(noCacheUrl)
+                .then(res => res.text())
+                .then(data => {
+                    const rows = data.split('\n').slice(1);
+                    let finalHtml = "";
+                    let hasSubmissions = false;
+
+                    for (let i = rows.length - 1; i >= 0; i--) {
+                        const row = rows[i];
+                        if (!row.trim()) continue;
+                        
+                        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        if (!cols[1]) continue;
+
+                        const rowRoblox = cols[1].replace(/^"|"$/g, '').trim();
+
+                        if (rowRoblox.toLowerCase() === playerName.toLowerCase()) {
+                            hasSubmissions = true;
+                            
+                            const timestamp = cols[0] ? cols[0].replace(/^"|"$/g, '') : '';
+                            const games = cols[4] ? cols[4].replace(/^"|"$/g, '') : 'Unknown Challenge';
+                            const rawStatus = cols[7] ? cols[7].replace(/^"|"$/g, '').trim().toUpperCase() : '';
+
+                            let statusBadge = '';
+                            if (rawStatus === 'ACCEPTED' || rawStatus === 'Y') {
+                                statusBadge = `<span style="background-color: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; border: 1px solid #22c55e; text-transform: uppercase;">Approved</span>`;
+                            } else if (rawStatus === 'REJECTED' || rawStatus === 'N') {
+                                statusBadge = `<span style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; border: 1px solid #ef4444; text-transform: uppercase;">Rejected</span>`;
+                            } else {
+                                statusBadge = `<span style="background-color: rgba(234, 179, 8, 0.2); color: #eab308; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; border: 1px solid #eab308; text-transform: uppercase;">Pending</span>`;
+                            }
+
+                            finalHtml += `
+                                <div style="margin-top: 10px; padding: 12px 15px; background-color: rgba(255,255,255,0.03); border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #444;">
+                                    <div>
+                                        <strong style="color: #fff; font-size: 1.05rem;">${games}</strong>
+                                        <div style="font-size: 0.8rem; color: #888; margin-top: 3px;">Submitted: ${timestamp}</div>
+                                    </div>
+                                    <div>${statusBadge}</div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    if (!hasSubmissions) {
+                        subsEl.innerHTML = "<p style='padding-left: 20px;'>No recent submissions found.</p>";
+                    } else {
+                        subsEl.innerHTML = finalHtml;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching submissions:", err);
+                    subsEl.innerHTML = "<p style='color: #ef4444; padding-left: 20px;'>Failed to load submission data.</p>";
+                });
+        }
+
+function fetchPlayerStats(playerName) {
+    let gameTierMap = {};
+
+    Promise.all([
+        fetch(challengesCsvUrl).then(res => res.text()),
+        fetch(playersCsvUrl).then(res => res.text())
+    ]).then(([challengesData, playersData]) => {
+
+        const challengeRows = challengesData.split('\n').slice(1);
+        challengeRows.forEach(row => {
+            if (!row.trim()) return;
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (!cols[1] || cols[1].trim() === '') return;
+            
+            let rawTier = cols[0].replace(/[^0-6]/g, '');
+            if (rawTier === '') return;
+            
+            const title = cols[1].replace(/^"|"$/g, '').toLowerCase().trim(); 
+            gameTierMap[title] = rawTier[0];
+        });
+
+        const playerRows = playersData.split('\n').slice(1);
+        let allPlayers = [];
+        
+        const nameCol = 0;   
+        const scoreCol = 2;  
+        const gamesCol = 10; 
+
+        playerRows.forEach(row => {
+            if (!row.trim()) return;
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (!cols[nameCol]) return;
+
+            const rowName = cols[nameCol].replace(/^"|"$/g, '').trim();
+            const score = parseInt(cols[scoreCol] ? cols[scoreCol].replace(/^"|"$/g, '') : 0) || 0;
+            const allGamesRaw = cols[gamesCol] ? cols[gamesCol].replace(/^"|"$/g, '') : '';
+
+            allPlayers.push({ name: rowName, score: score, games: allGamesRaw });
+        });
+
+        allPlayers.sort((a, b) => b.score - a.score);
+
+        let foundUser = false;
+        
+        allPlayers.forEach((player, index) => {
+            if (player.name.toLowerCase() === playerName.toLowerCase()) {
+                foundUser = true;
+                
+                const rank = index + 1;
+                rankEl.innerText = "#" + rank;
+                scoreEl.innerText = player.score;
+
+                if (!player.games) {
+                    gamesEl.innerHTML = "<p style='padding-left: 20px;'>No recorded challenges yet.</p>";
+                    return;
+                }
+
+                const allGames = player.games.split(',').map(g => g.trim()).filter(g => g !== '');
+                const tierGroups = { "0": [], "1": [], "2": [], "3": [], "4": [], "5": [], "6": [] };
+
+                allGames.forEach(game => {
+                    const cleanGameName = game.replace(/^"|"$/g, '').toLowerCase().trim();
+                    const tier = gameTierMap[cleanGameName];
+                    
+                    if (tier !== undefined) {
+                        tierGroups[tier].push(game.replace(/^"|"$/g, '').trim());
+                    }
+                });
+
+                const tierColors = { "0": "#22c55e", "1": "#cfe2f3", "2": "#BA7FF5", "3": "#ef4444", "4": "#274E13", "5": "#073763", "6": "#351c75" };
+                let finalHtml = "";
+
+                for (let i = 6; i >= 0; i--) {
+                    if (tierGroups[i].length > 0) {
+                        const color = tierColors[i];
+                        const listItems = tierGroups[i].map(g => `<li>${g}</li>`).join('');
+                        
+                        finalHtml += `
+                            <div style="margin-top: 15px; padding: 10px 15px; background-color: rgba(255,255,255,0.03); border-left: 4px solid ${color}; border-radius: 6px;">
+                                <h4 style="margin: 0 0 10px 0; color: ${color}; text-transform: uppercase; letter-spacing: 1px;">Tier ${i} Games</h4>
+                                <ul style="margin: 0; padding-left: 25px; color: #ccc;">
+                                    ${listItems}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                }
+
+                if (finalHtml === "") {
+                    gamesEl.innerHTML = "<p style='padding-left: 20px;'>No categorized games found.</p>";
+                } else {
+                    gamesEl.innerHTML = finalHtml;
+                }
+            }
+        });
+
+        if (!foundUser) {
+            rankEl.innerText = "N/A";
+            scoreEl.innerText = "0";
+            gamesEl.innerHTML = "<p style='padding-left: 20px;'>No recorded challenges yet. Complete a submission to get on the board!</p>";
+        }
+
+    }).catch(error => {
+        console.error("Error fetching stats:", error);
+        gamesEl.innerHTML = "<p style='color: #ef4444; padding-left: 20px;'>Failed to load spreadsheet data.</p>";
+    });
+}
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            });
+        });
+    </script>
+
+    <script>
+        function toggleProfileSection(contentId, btnElement) {
+            const content = document.getElementById(contentId);
+            const icon = btnElement.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                icon.innerText = "+";
+            } else {
+                content.classList.add('show');
+                icon.innerText = "−"; 
+            }
+        }
+    </script>
+</body>
+</html>

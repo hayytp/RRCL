@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - RRCL</title>
+    <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/e1/b3/0f/e1b30f0f9daeb7ab0da8e9c9564879a1.jpg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn">The List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
+        </div>
+    </nav>
+
+    <div class="main-layout">
+        <div class="submit-container">
+            <h2>Welcome Back</h2>
+            <p>Log in to access your RRCL account.</p>
+            
+            <form id="login-form">
+                
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" name="login-email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="login-password" required>
+                </div>
+
+                <button type="submit" class="submit-btn" id="login-btn">Log In</button>
+            </form>
+            
+            <p style="margin-top: 25px; color: #cccccc;">
+                Don't have an account? <a href="register.html" style="color: #22c55e; text-decoration: none; font-weight: bold;">Sign Up Here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.getElementById('login-btn');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            loginBtn.innerText = "Logging in...";
+            loginBtn.disabled = true;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("Welcome back!");
+                    window.location.href = "index.html"; 
+                })
+                .catch((error) => {
+                    alert("Login Failed: Incorrect email or password.");
+                    loginBtn.innerText = "Log In";
+                    loginBtn.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>

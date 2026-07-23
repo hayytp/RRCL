@@ -13,11 +13,11 @@
         <div class="nav-brand">Roblox Ranked Challenges List</div>
         
 <div class="nav-links">
-    <a href="./" class="nav-btn active">Info</a>
-    <a href="list" class="nav-btn">The List</a>
-    <a href="leaderboard" class="nav-btn">Leaderboard</a>
-    <a href="update" class="nav-btn">Live Feed</a>
-    <a href="submit" class="nav-btn">Submit</a>
+    <a href="index.html" class="nav-btn active">Info</a>
+    <a href="list.html" class="nav-btn">The List</a>
+    <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+    <a href="submit.html" class="nav-btn">Submit</a>
+    <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
 </div>
     </nav>
 
@@ -30,18 +30,15 @@
         </div>
     </div>
 
-<!-- BOTTOM SECTION: The Rules & Requirements -->
     <div class="rules-section">
-        
         <h2 class="list-info-title">List Info</h2>
-        
         <!-- List Rules -->
         <div class="rule-card">
             <h2>List Rules</h2>
             <ul>
                 <li>No Private Servers <em>(Unless they're free)</em></li>
                 <li>No Hacks / Exploits / Cheats</li>
-                <li>Must submit proof of completion on the <strong>Submit Tab</strong> of the website or in the <strong>#claim-points</strong> channel in our <a href="#" class="discord-link">Discord Server</a></li>
+                <li>Must submit proof of completion on the <strong>Submit Tab</strong> of the website or in the <strong>#submissions</strong> channel in our <a href="https://discord.gg/nUk5f6atVt" class="discord-link">Discord Server</a></li>
                 <li>All form of proof <strong>MUST</strong> be unedited and <strong>MUST</strong> have the player's Roblox Username</li>
             </ul>
         </div>
@@ -58,7 +55,7 @@
                 <li>No "Stay in the Server for..." challenges <em>(e.g., AFK for 24 Hours)</em></li>
                 <li>Challenges don't necessarily have to be Badges</li>
                 <li>If the Creator of a game asks for their challenge to be removed, it will be removed</li>
-                <li><strong>YOU</strong> can suggest a challenge in our <a href="#" class="discord-link">Discord Server</a> if it should replace one on the list!</li>
+                <li><strong>YOU</strong> can suggest a challenge in our <a href="https://discord.gg/nUk5f6atVt" class="discord-link">Discord Server</a> if it should replace one on the list!</li>
             </ul>
         </div>
 
@@ -86,7 +83,7 @@
     <div class="rule-card" style="border-top-color: #5865F2;">
         <h2 style="border-bottom-color: #5865F2;">Recommendations</h2>
         <p style="font-size: 1.05rem; line-height: 1.6; margin-top: 0; color: #cccccc;">Think a game is missing? Have a recommendation to improve the list or change a tier?</p>
-        <p style="font-size: 1.05rem; line-height: 1.6; margin-bottom: 0;">Drop your suggestions in our <a href="#" class="discord-link">Discord Server</a> so the community can vote on it :p</p>
+        <p style="font-size: 1.05rem; line-height: 1.6; margin-bottom: 0;">Drop your suggestions in our <a href="https://discord.gg/nUk5f6atVt" class="discord-link">Discord Server</a> so the community can vote on it :p</p>
     </div>
 
 </div>
@@ -96,7 +93,41 @@
         <p>Heavily inspired by the <strong>Ultra Hard Badge List</strong></p>
     </footer>
 
-    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const navAuthBtn = document.getElementById('nav-auth-btn');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const fullNames = user.displayName || "Unknown||Player";
+
+                const robloxName = fullNames.split("||")[0];
+
+                navAuthBtn.innerText = robloxName;
+                navAuthBtn.href = "profile.html";
+                navAuthBtn.style.color = "#22c55e";
+                navAuthBtn.style.borderBottom = "2px solid #22c55e"; 
+
+            } else {
+                navAuthBtn.innerText = "Log In";
+                navAuthBtn.href = "login.html";
+            }
+        });
+    </script>
 
 </body>
 </html>

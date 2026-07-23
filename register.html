@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - RRCL</title>
+    <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/e1/b3/0f/e1b30f0f9daeb7ab0da8e9c9564879a1.jpg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="top-navbar">
+        <div class="nav-brand">Roblox Ranked Challenges List</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Info</a>
+            <a href="list.html" class="nav-btn">The List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
+        </div>
+    </nav>
+
+    <div class="main-layout">
+        <div class="submit-container">
+            <h2>Create Account</h2>
+            <p>Join the RRCL to submit completions :p</p>
+            
+            <form id="register-form">
+                
+                <div class="form-group">
+                    <label for="reg-username">Roblox Username *</label>
+                    <input type="text" id="reg-username" name="reg-username" placeholder="Your exact Roblox name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-discord">Discord Username *</label>
+                    <input type="text" id="reg-discord" name="reg-discord" placeholder="e.g. username#1234 or just username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Email Address *</label>
+                    <input type="email" id="reg-email" name="reg-email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Password *</label>
+                    <input type="password" id="reg-password" name="reg-password" placeholder="Must be at least 6 characters" required minlength="6">
+                </div>
+
+                <button type="submit" class="submit-btn" id="reg-btn">Sign Up</button>
+            </form>
+            
+            <p style="margin-top: 25px; color: #cccccc;">
+                Already have an account? <a href="login.html" style="color: #22c55e; text-decoration: none; font-weight: bold;">Log In Here</a>
+            </p>
+        </div>
+    </div>
+
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const registerForm = document.getElementById('register-form');
+        const regBtn = document.getElementById('reg-btn');
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+            
+            const username = document.getElementById('reg-username').value;
+            const discord = document.getElementById('reg-discord').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            regBtn.innerText = "Creating Account...";
+            regBtn.disabled = true;
+
+            const combinedNames = username + "||" + discord;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+
+                    return updateProfile(userCredential.user, {
+                        displayName: combinedNames
+                    });
+                })
+                .then(() => {
+                    alert("Account successfully created!");
+                    window.location.href = "index.html"; 
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                    regBtn.innerText = "Sign Up";
+                    regBtn.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>

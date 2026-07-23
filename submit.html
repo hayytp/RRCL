@@ -5,69 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Record - RRCL</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* MAIN PAGE OVERRIDES FOR CLEAN LOOK */
+        .selection-preview {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px dashed #555;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        .open-modal-btn {
+            background-color: transparent;
+            border: 2px solid #22c55e;
+            color: #22c55e;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .open-modal-btn:hover {
+            background-color: rgba(34, 197, 94, 0.1);
+        }
+
+        /* THE MODAL OVERLAY (The Pop-up) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px); /* Sleek blur effect */
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: #fff;
+        }
+        .close-modal-x {
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal-x:hover { color: #ef4444; }
+        
+        .modal-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        /* Custom Scrollbar */
+        .modal-content::-webkit-scrollbar { width: 8px; }
+        .modal-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #222;
+            background-color: #0a0a0a;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Checkbox Styling inside Modal */
+        .tier-group { margin-bottom: 25px; }
+        .tier-group h4 {
+            margin: 0 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #333;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        .checkbox-label input {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: #22c55e;
+        }
+
+        /* Disabled Checkbox Styling */
+        .checkbox-label.disabled-label {
+            cursor: not-allowed;
+            color: #555;
+        }
+        .checkbox-label.disabled-label input {
+            cursor: not-allowed;
+            accent-color: #555; 
+        }
+        .completed-tag {
+            color: #22c55e;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
 <body>
 
     <nav class="top-navbar">
         <div class="nav-brand">Roblox Ranked Challenges List</div>
         <div class="nav-links">
-            <a href="./" class="nav-btn">Home</a>
-            <a href="list" class="nav-btn">Main List</a>
-            <a href="leaderboard" class="nav-btn">Leaderboard</a>
-            <a href="update" class="nav-btn">Live Feed</a>
-            <a href="submit" class="nav-btn active">Submit</a>
+            <a href="index.html" class="nav-btn">Home</a>
+            <a href="list.html" class="nav-btn">The List</a>
+            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+            <a href="submit.html" class="nav-btn active">Submit</a>
+            <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
         </div>
     </nav>
 
     <div class="main-layout">
         <div class="submit-container">
             <h2>Submit a Record</h2>
-            <p>Fill out the details below to submit a completion.</p>
+            <p style="margin-bottom: 25px;">Provide your proof link and select the challenges you've completed.</p>
             
             <form id="rrcl-submit-form">
+                <input type="hidden" id="roblox-name" name="roblox-name" required>
+                <input type="hidden" id="discord-name" name="discord-name" required>
+                <input type="hidden" id="selected-challenges" name="selected-challenges" required>
+                <input type="hidden" id="selected-tiers" name="selected-tiers" required>
+
+                <button type="button" class="open-modal-btn" id="open-modal-btn">+ Select Challenges</button>
                 
-                <div class="form-group">
-                    <label for="roblox-name">Roblox Username *</label>
-                    <input type="text" id="roblox-name" name="roblox-name" required>
+                <div class="selection-preview" id="selection-preview">
+                    <em>No challenges selected yet.</em>
                 </div>
 
                 <div class="form-group">
-                    <label for="discord-name">Discord Username *</label>
-                    <input type="text" id="discord-name" name="discord-name" placeholder="e.g. username#1234 or just username" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="tier-select">Choose Tier *</label>
-                    <select id="tier-select" name="tier-select" required>
-                        <option value="" disabled selected>Select a Tier...</option>
-                        <option value="0">Tier 0</option>
-                        <option value="1">Tier 1</option>
-                        <option value="2">Tier 2</option>
-                        <option value="3">Tier 3</option>
-                        <option value="4">Tier 4</option>
-                        <option value="5">Tier 5</option>
-                        <option value="6">Tier 6</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Challenge(s) Completed *</label>
-                    <div class="multi-select-container" id="multi-select-wrapper" style="pointer-events: none; opacity: 0.5;">
-                        <div class="multi-select-header" id="multi-select-header">
-                            <span id="multi-select-text">Waiting for Tier selection...</span>
-                            <span class="dropdown-arrow">▼</span>
-                        </div>
-                        <div class="multi-select-dropdown" id="multi-select-dropdown">
-                            </div>
-                    </div>
-                    <input type="hidden" id="selected-challenges" name="selected-challenges" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="video-link">Proof Link *</label>
-                    <input type="url" id="video-link" name="video-link" placeholder="YouTube, Google Drive, etc." required>
-                </div>
-
+    <div class="form-group">
+        <label for="video-link">Proof Link</label>
+        <input type="url" id="video-link" name="video-link" placeholder="YouTube or Google Drive Link..." required>
+    </div>
                 <div class="form-group">
                     <label for="submit-note">Leave a Note (Optional)</label>
                     <textarea id="submit-note" name="submit-note" rows="3" placeholder="Any extra info for the list mods?"></textarea>
@@ -75,97 +179,193 @@
 
                 <button type="submit" class="submit-btn" id="main-submit-btn">Send Submission</button>
             </form>
+            
+            <p style="margin-top: 25px; color: #888888; font-size: 0.95rem; line-height: 1.5;">
+                Having trouble submitting? You can always submit your proof directly in the <a href="https://discord.gg/nUk5f6atVt" class="discord-link">#submissions</a> channel in our Discord Server!
+            </p>
         </div>
     </div>
 
-    <script>
-        const submitBtn = document.getElementById('main-submit-btn');
-        const COOLDOWN_TIME = 120000; 
-
-        // 1. FETCH CHALLENGES DATA
-        const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
-        let tierData = { '0':[], '1':[], '2':[], '3':[], '4':[], '5':[], '6':[] };
-
-        fetch(challengesCsvUrl)
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.split('\n').slice(1); 
-                rows.forEach(row => {
-                    if (!row.trim()) return; 
-                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (!cols[1] || cols[1].trim() === '') return; 
-
-                    let rawTier = cols[0].replace(/[^0-6]/g, '');
-                    if (rawTier === '') return; 
-                    const tier = rawTier[0]; 
-                    const title = cols[1].trim().replace(/^"|"$/g, '');
-
-                    if(tierData[tier] !== undefined) {
-                        tierData[tier].push(title);
-                    }
-                });
-            })
-            .catch(err => console.error("Error loading challenge data.", err));
-
-        // 2. CUSTOM DROPDOWN LOGIC
-        const tierSelect = document.getElementById('tier-select');
-        const multiWrapper = document.getElementById('multi-select-wrapper');
-        const multiHeader = document.getElementById('multi-select-header');
-        const multiDropdown = document.getElementById('multi-select-dropdown');
-        const multiText = document.getElementById('multi-select-text');
-        const hiddenChallengesInput = document.getElementById('selected-challenges');
-
-        // Unlock challenges when tier is chosen
-        tierSelect.addEventListener('change', function() {
-            const selectedTier = this.value;
-            multiWrapper.style.pointerEvents = "auto";
-            multiWrapper.style.opacity = "1";
-            multiText.innerText = "Select challenges...";
-            multiDropdown.innerHTML = ""; // Clear old boxes
-            hiddenChallengesInput.value = ""; // Reset hidden validation
-
-            if(tierData[selectedTier]) {
-                tierData[selectedTier].forEach(game => {
-                    const label = document.createElement('label');
-                    label.className = "checkbox-item";
-                    label.innerHTML = `<input type="checkbox" value="${game}"> ${game}`;
-                    
-                    // Listen for clicks to update the header text
-                    label.querySelector('input').addEventListener('change', updateSelectedCount);
-                    multiDropdown.appendChild(label);
-                });
-            }
-        });
-
-        // Toggle Dropdown open/close
-        multiHeader.addEventListener('click', () => {
-            multiDropdown.classList.toggle('show');
-        });
-
-        // Close dropdown if clicking outside of it
-        document.addEventListener('click', (e) => {
-            if (!multiWrapper.contains(e.target)) {
-                multiDropdown.classList.remove('show');
-            }
-        });
-
-        function updateSelectedCount() {
-            const checkedBoxes = multiDropdown.querySelectorAll('input[type="checkbox"]:checked');
-            const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
+    <div class="modal-overlay" id="challenges-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Select Challenges</h3>
+                <div class="close-modal-x" id="close-x">&times;</div>
+            </div>
             
-            if (selectedValues.length === 0) {
-                multiText.innerText = "Select challenges...";
-                hiddenChallengesInput.value = "";
-            } else if (selectedValues.length === 1) {
-                multiText.innerText = selectedValues[0];
-                hiddenChallengesInput.value = selectedValues[0];
+            <div class="modal-content" id="modal-content">
+                <p style="color: #888; text-align: center;">Loading challenges database...</p>
+                </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="submit-btn" id="done-modal-btn" style="margin: 0; background-color: #22c55e;">Confirm Selection</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Elements
+        const navAuthBtn = document.getElementById('nav-auth-btn');
+        const robloxInput = document.getElementById('roblox-name');
+        const discordInput = document.getElementById('discord-name');
+        
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const modalOverlay = document.getElementById('challenges-modal');
+        const closeModalX = document.getElementById('close-x');
+        const doneModalBtn = document.getElementById('done-modal-btn');
+        const modalContent = document.getElementById('modal-content');
+        
+        const selectionPreview = document.getElementById('selection-preview');
+        const hiddenChallengesInput = document.getElementById('selected-challenges');
+        const hiddenTiersInput = document.getElementById('selected-tiers');
+        const submitBtn = document.getElementById('main-submit-btn');
+
+        const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
+        const playersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHILLb1CTdxro6zyl73KXNxqA6f1ZXgjY6fz9LoUylWCt1ln_nEpsyeFW877ewAUA0qtYdVCGe4gXy/pub?gid=858441458&single=true&output=csv';
+
+        let tierData = { '0':[], '1':[], '2':[], '3':[], '4':[], '5':[], '6':[] };
+        const tierColors = { "0": "#22c55e", "1": "#cfe2f3", "2": "#BA7FF5", "3": "#ef4444", "4": "#274E13", "5": "#073763", "6": "#351c75" };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+
+                const fullNames = user.displayName || "Unknown||Player";
+                const splitNames = fullNames.split("||");
+                const loggedInRobloxName = splitNames[0].toLowerCase().trim();
+                
+                navAuthBtn.innerText = splitNames[0];
+                navAuthBtn.href = "profile.html"; 
+                navAuthBtn.style.color = "#22c55e"; 
+                navAuthBtn.style.borderBottom = "2px solid #22c55e";
+                
+                robloxInput.value = splitNames[0];
+                discordInput.value = splitNames[1] || "";
+
+                Promise.all([
+                    fetch(challengesCsvUrl).then(res => res.text()),
+                    fetch(playersCsvUrl).then(res => res.text())
+                ]).then(([challengesData, playersData]) => {
+
+                    let completedGames = [];
+                    const playerRows = playersData.split('\n').slice(1);
+                    for (let row of playerRows) {
+                        if (!row.trim()) continue;
+                        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        if (!cols[0]) continue; 
+                        
+                        const rowName = cols[0].replace(/^"|"$/g, '').toLowerCase().trim();
+                        if (rowName === loggedInRobloxName) {
+                            const allGamesRaw = cols[10] ? cols[10].replace(/^"|"$/g, '') : '';
+                            completedGames = allGamesRaw.split(',').map(g => g.toLowerCase().trim()).filter(g => g !== '');
+                            break; 
+                        }
+                    }
+
+                    const rows = challengesData.split('\n').slice(1); 
+                    rows.forEach(row => {
+                        if (!row.trim()) return; 
+                        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        if (!cols[1]) return; 
+
+                        let rawTier = cols[0].replace(/[^0-6]/g, '');
+                        if (rawTier === '') return; 
+                        
+                        const title = cols[1].trim().replace(/^"|"$/g, '');
+                        if(tierData[rawTier[0]] !== undefined) tierData[rawTier[0]].push(title);
+                    });
+
+                    modalContent.innerHTML = ''; 
+                    for (let i = 0; i <= 6; i++) {
+                        if (tierData[i].length > 0) {
+                            const color = tierColors[i];
+                            const groupDiv = document.createElement('div');
+                            groupDiv.className = 'tier-group';
+                            groupDiv.innerHTML = `<h4 style="color: ${color}; border-bottom-color: ${color}40;">Tier ${i}</h4>`;
+                            
+                            tierData[i].forEach(game => {
+                                const isCompleted = completedGames.includes(game.toLowerCase().trim());
+                                const label = document.createElement('label');
+                                
+                                if (isCompleted) {
+                                    label.className = 'checkbox-label disabled-label';
+                                    label.innerHTML = `
+                                        <input type="checkbox" value="${game}" data-tier="${i}" disabled checked> 
+                                        <span style="text-decoration: line-through;">${game}</span> 
+                                        <span class="completed-tag">[ALREADY COMPLETED]</span>
+                                    `;
+                                } else {
+                                    label.className = 'checkbox-label';
+                                    label.innerHTML = `<input type="checkbox" value="${game}" data-tier="${i}"> ${game}`;
+                                }
+                                
+                                groupDiv.appendChild(label);
+                            });
+                            
+                            modalContent.appendChild(groupDiv);
+                        }
+                    }
+                }).catch(err => {
+                    modalContent.innerHTML = '<p style="color: #ef4444;">Failed to load database.</p>';
+                    console.error(err);
+                });
+
             } else {
-                multiText.innerText = `${selectedValues.length} Challenges Selected`;
-                hiddenChallengesInput.value = selectedValues.join(', ');
+                window.location.href = "login.html";
             }
+        });
+
+        openModalBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'flex';
+        });
+        
+        function closeModalAndSave() {
+            modalOverlay.style.display = 'none';
+            
+            const checkedBoxes = modalContent.querySelectorAll('input[type="checkbox"]:checked:not(:disabled)');
+            const selectedGames = [];
+            const selectedTiers = new Set(); 
+
+            checkedBoxes.forEach(cb => {
+                selectedGames.push(cb.value);
+                selectedTiers.add(cb.getAttribute('data-tier'));
+            });
+
+            if (selectedGames.length === 0) {
+                selectionPreview.innerHTML = "<em>No challenges selected.</em>";
+                selectionPreview.style.borderColor = "#555";
+                selectionPreview.style.color = "#ccc";
+            } else {
+                selectionPreview.innerHTML = `<strong style="color:#22c55e;">${selectedGames.length}</strong> Challenge(s) Selected for Submission`;
+                selectionPreview.style.borderColor = "#22c55e";
+                selectionPreview.style.color = "#fff";
+            }
+
+            hiddenChallengesInput.value = selectedGames.join(', ');
+            hiddenTiersInput.value = Array.from(selectedTiers).sort().join(',');
         }
 
-        // 3. COOLDOWN LOGIC
+        closeModalX.addEventListener('click', closeModalAndSave);
+        doneModalBtn.addEventListener('click', closeModalAndSave);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModalAndSave();
+        });
+
+        const COOLDOWN_TIME = 120000; 
         function checkCooldown() {
             const lastSubTime = localStorage.getItem('rrcl_last_submission');
             if (lastSubTime) {
@@ -175,7 +375,6 @@
                     submitBtn.innerText = `On Cooldown (${timeLeft}m left)`;
                     submitBtn.style.backgroundColor = "#555555";
                     submitBtn.disabled = true; 
-                    submitBtn.style.cursor = "not-allowed";
                     return true; 
                 }
             }
@@ -183,14 +382,12 @@
         }
         checkCooldown();
 
-        // 4. SUBMIT FORM LOGIC
         document.getElementById('rrcl-submit-form').addEventListener('submit', function(e) {
             e.preventDefault(); 
             if (checkCooldown()) return; 
 
-            // Validate that at least one challenge was checked
             if (hiddenChallengesInput.value === "") {
-                alert("Please select at least one challenge from the dropdown!");
+                alert("Please click '+ Select Challenges' and choose at least one game!");
                 return;
             }
 
@@ -200,8 +397,8 @@
             const formData = {
                 'roblox-name': document.getElementById('roblox-name').value,
                 'discord-name': document.getElementById('discord-name').value,
-                'tier': document.getElementById('tier-select').value,
-                'challenge-name': hiddenChallengesInput.value,
+                'tier': document.getElementById('selected-tiers').value, 
+                'challenge-name': hiddenChallengesInput.value,           
                 'video-link': document.getElementById('video-link').value,
                 'note': document.getElementById('submit-note').value
             };
@@ -217,14 +414,17 @@
             .then(() => {
                 submitBtn.innerText = "Submitted!";
                 submitBtn.style.backgroundColor = "#1ea34d"; 
-                document.getElementById('rrcl-submit-form').reset(); 
                 
-                // Reset custom dropdown UI
-                multiWrapper.style.pointerEvents = "none";
-                multiWrapper.style.opacity = "0.5";
-                multiText.innerText = "Waiting for Tier selection...";
-                multiDropdown.innerHTML = "";
+                document.getElementById('video-link').value = "";
+                document.getElementById('submit-note').value = "";
+
+                const allCheckboxes = modalContent.querySelectorAll('input[type="checkbox"]');
+                allCheckboxes.forEach(cb => cb.checked = false);
+                selectionPreview.innerHTML = "<em>No challenges selected yet.</em>";
+                selectionPreview.style.borderColor = "#555";
+                selectionPreview.style.color = "#ccc";
                 hiddenChallengesInput.value = "";
+                hiddenTiersInput.value = "";
                 
                 localStorage.setItem('rrcl_last_submission', Date.now());
                 setTimeout(() => { checkCooldown(); }, 3000);

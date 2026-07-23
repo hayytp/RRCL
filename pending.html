@@ -14,8 +14,8 @@
             <a href="index.html" class="nav-btn">Info</a>
             <a href="list.html" class="nav-btn active">The List</a>
             <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
-            <a href="update.html" class="nav-btn">Live Feed</a>
             <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
         </div>
     </nav>
 
@@ -23,7 +23,7 @@
         <div class="list-column">
             
 <div class="page-header">
-    <a href="list" class="action-btn back-btn"><span>⬅</span> Back to Main List</a>
+    <a href="list.html" class="action-btn back-btn"><span>⬅</span> Back to Main List</a>
     <h1 class="page-title">Pending Games</h1>
     <p class="page-subtitle">Games where placement hasn't been decided or Games that has no Challenges yet (but has challenge potential)</p>
 </div>
@@ -36,7 +36,6 @@
     </div>
 
     <script>
-        // Make sure this is the exact URL for your Pending Google Sheet tab!
         const pendingCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=1651991522&single=true&output=csv';
 
         fetch(pendingCsvUrl)
@@ -57,8 +56,6 @@
 
                 rows.forEach(row => {
                     if (!row.trim()) return;
-                    
-                    // Safely split commas, ignoring those inside text
                     const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     
                     // Column 0 = Game Title, Column 1 = Image, Column 2 = Game Link
@@ -68,7 +65,6 @@
                     const image = cols[1] ? cols[1].trim() : '';
                     const gameLink = cols[2] ? cols[2].trim() : '#';
 
-                    // Simplified Card structure (No points or challenge descriptions)
                     const cardHtml = `
                         <div class="pointercrate-card pending-card">
                             <a href="${gameLink}" target="_blank" class="card-link-wrapper">
@@ -92,6 +88,45 @@
                 document.getElementById('empty-pending-msg').innerText = "Error loading pending list.";
                 console.error("Error loading pending list:", error);
             });
+    </script>
+
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const navAuthBtn = document.getElementById('nav-auth-btn');
+
+        if (navAuthBtn) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const fullNames = user.displayName || "Unknown||Player";
+                    const robloxName = fullNames.split("||")[0];
+                    
+                    navAuthBtn.innerText = robloxName;
+                    navAuthBtn.href = "profile.html"; 
+                    navAuthBtn.style.color = "#22c55e"; 
+
+                    if (!navAuthBtn.classList.contains('active')) {
+                        navAuthBtn.style.borderBottom = "2px solid #22c55e"; 
+                    }
+                } else {
+                    navAuthBtn.innerText = "Log In";
+                    navAuthBtn.href = "login.html";
+                }
+            });
+        }
     </script>
 </body>
 </html>

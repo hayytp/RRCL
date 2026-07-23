@@ -14,17 +14,30 @@
             <a href="index.html" class="nav-btn">Info</a>
             <a href="list.html" class="nav-btn active">The List</a>
             <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
-            <a href="update.html" class="nav-btn">Live Feed</a>
             <a href="submit.html" class="nav-btn">Submit</a>
+            <a href="login.html" class="nav-btn" id="nav-auth-btn">Log In</a>
         </div>
     </nav>
 
     <div class="main-layout"> 
         <div class="list-column">
             
-            <div class="page-navigation-container">
-    <a href="pending" class="action-btn pending-btn">View Pending List <span>➔</span></a>
-</div>
+            <div class="page-navigation-container" style="display: flex; justify-content: space-between; align-items: center;">
+                <button id="layout-toggle-btn">Switch to Grid View</button>
+                <a href="pending.html" class="action-btn pending-btn">View Pending List <span>➔</span></a>
+            </div>
+
+            <div class="search-container" style="margin-bottom: 25px;">
+                <input type="text" id="challenge-search" class="list-search-input" placeholder="Search for a game or challenge...">
+            </div>
+
+            <p id="no-results-msg" style="display: none; text-align: center; color: #888888; font-size: 1.1rem; margin-top: 20px;">No Results :p</p>
+
+            <div id="list-loading-screen">
+                Loading List Data...
+            </div>
+
+            <div id="all-tiers-container" style="display: none;">
                 
                 <div class="tier-section tier-0">
                     <button class="tier-toggle">Tier 0 <span class="toggle-icon">+</span></button>
@@ -74,27 +87,95 @@
                         <div class="tier-content-inner" id="tier-6-list"></div>
                     </div>
                 </div>
+                
+            </div>        
 
             </div>
         </div>
     </div>
 
-    <script>
+    <div class="list-modal-overlay" id="game-info-modal">
+        <div class="list-modal-box">
+            <div class="list-modal-header">
+                <h3 id="modal-title">Game Title</h3>
+                <div class="list-close-btn" onclick="document.getElementById('game-info-modal').style.display='none'">&times;</div>
+            </div>
+            <div class="list-modal-content">
+                <img id="modal-img" src="" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333;">
+                <p style="color: #ccc; font-size: 1.1rem;"><strong>Challenge:</strong> <span id="modal-challenge"></span></p>
+                <p class="points-text" id="modal-points" style="font-size: 1.5rem; margin: 15px 0;"></p>
+                <a id="modal-link" href="#" target="_blank" class="submit-btn" style="display: inline-block; text-decoration: none; box-sizing: border-box;">Go To Game</a>
+            </div>
+        </div>
+    </div>
+
+   <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBteHb184N7XG7hVTFfJt5N8TGeYz70juI",
+            authDomain: "rrcl-d5c6e.firebaseapp.com",
+            projectId: "rrcl-d5c6e",
+            storageBucket: "rrcl-d5c6e.firebasestorage.app",
+            messagingSenderId: "1096069272697",
+            appId: "1:1096069272697:web:278ce2e4390d76685bb0a8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
         const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
+        const playersCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHILLb1CTdxro6zyl73KXNxqA6f1ZXgjY6fz9LoUylWCt1ln_nEpsyeFW877ewAUA0qtYdVCGe4gXy/pub?gid=858441458&single=true&output=csv';
 
-        fetch(challengesCsvUrl)
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.split('\n').slice(1); 
+        const navAuthBtn = document.getElementById('nav-auth-btn');
+        const loadingScreen = document.getElementById('list-loading-screen');
+        const tiersContainer = document.getElementById('all-tiers-container');
+
+        onAuthStateChanged(auth, (user) => {
+            let loggedInRobloxName = "";
+
+            if (user) {
+                const fullNames = user.displayName || "Unknown||Player";
+                loggedInRobloxName = fullNames.split("||")[0].toLowerCase().trim();
                 
-                const tierBuckets = {
-                    '0': '', '1': '', '2': '', '3': '', '4': '', '5': '', '6': ''
-                };
+                navAuthBtn.innerText = fullNames.split("||")[0];
+                navAuthBtn.href = "profile.html"; 
+                navAuthBtn.style.color = "#22c55e"; 
+                navAuthBtn.style.borderBottom = "2px solid #22c55e"; 
+            } else {
+                navAuthBtn.innerText = "Log In";
+                navAuthBtn.href = "login.html";
+            }
 
-                // Safely split columns ignoring commas inside quotes
-                rows.forEach(row => {
+            Promise.all([
+                fetch(challengesCsvUrl).then(res => res.text()),
+                fetch(playersCsvUrl).then(res => res.text())
+            ]).then(([challengesData, playersData]) => {
+                const sanitizeForMatch = (str) => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+                let completedGames = [];
+                if (loggedInRobloxName !== "") {
+                    const playerRows = playersData.split('\n').slice(1);
+                    for (let row of playerRows) {
+                        if (!row.trim()) continue;
+                        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        if (!cols[0]) continue; 
+                        
+                        const rowName = cols[0].replace(/^"|"$/g, '').toLowerCase().trim();
+                        if (rowName === loggedInRobloxName) {
+                            const allGamesRaw = cols[10] ? cols[10].replace(/^"|"$/g, '') : '';
+                            completedGames = allGamesRaw.split(',').map(g => sanitizeForMatch(g)).filter(g => g !== '');
+                            break; 
+                        }
+                    }
+                }
+
+                const challengeRows = challengesData.split('\n').slice(1); 
+                const tierBuckets = { '0': '', '1': '', '2': '', '3': '', '4': '', '5': '', '6': '' };
+
+                challengeRows.forEach(row => {
                     if (!row.trim()) return; 
-                    
                     const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     if (!cols[1] || cols[1].trim() === '') return; 
 
@@ -102,22 +183,27 @@
                     if (rawTier === '') return; 
                     const tier = rawTier[0]; 
 
-                    const title = cols[1].trim().replace(/^"|"$/g, '');
+                    const title = cols[1].replace(/^"|"$/g, '').trim();
                     const image = cols[2] ? cols[2].trim() : '';
-                    const challenge = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
+                    const challenge = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
                     const points = cols[4] ? cols[4].trim() : '';
                     const gameLink = cols[5] ? cols[5].trim() : '#'; 
 
+                    // CHECK FOR EXACT MATCH USING THE SANITIZER
+                    const isCompleted = completedGames.includes(sanitizeForMatch(title));
+                    const completedClass = isCompleted ? "completed-card" : "";
+
                     const cardHtml = `
-                        <div class="pointercrate-card">
-                            <a href="${gameLink}" target="_blank" class="card-link-wrapper">
-                                <img src="${image}" alt="${title}" class="card-thumb">
-                            </a>
+                        <div class="pointercrate-card ${completedClass}" onclick="openGridModal(this)" data-title="${title}" data-image="${image}" data-challenge="${challenge}" data-points="${points} points" data-link="${gameLink}">
+                            <div class="card-link-wrapper">
+                                <img src="${image}" alt="${title}" class="card-thumb" loading="lazy">
+                            </div>
                             <div class="card-text">
                                 <h2><a href="${gameLink}" target="_blank" class="game-title-link">${title}</a></h2>
                                 <p><strong>Challenge:</strong> ${challenge}</p>
                                 <p class="points-text">${points} points</p>
                             </div>
+                            <div class="grid-overlay">ℹ️ View Info</div>
                         </div>
                     `;
 
@@ -133,17 +219,57 @@
                     }
                 }
 
-                attachAccordionLogic();
-            })
-            .catch(error => {
-                console.error("Error loading challenges:", error);
-            });
+                loadingScreen.style.display = 'none';
+                tiersContainer.style.display = 'block';
 
-        // ACCORDION LOGIC
+                attachAccordionLogic(); 
+            }).catch(err => {
+                loadingScreen.innerText = "Error Loading List. Please refresh.";
+                loadingScreen.style.color = "#ef4444";
+                console.error(err);
+            });
+        });
+        
+        let isGridMode = false;
+        
+        const toggleBtn = document.getElementById('layout-toggle-btn');
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                isGridMode = !isGridMode;
+                const allTiers = document.querySelectorAll('.tier-content-inner');
+                
+                if (isGridMode) {
+                    toggleBtn.innerHTML = "📄 Switch to List View";
+                    allTiers.forEach(tier => tier.classList.add('grid-mode'));
+                    document.querySelector('.main-layout').style.maxWidth = "1100px"; 
+                } else {
+                    toggleBtn.innerHTML = "🔲 Switch to Grid View";
+                    allTiers.forEach(tier => tier.classList.remove('grid-mode'));
+                    document.querySelector('.main-layout').style.maxWidth = "900px"; 
+                }
+            });
+        }
+
+        window.openGridModal = function(cardElement) {
+            if (!isGridMode) return; 
+            document.getElementById('modal-title').innerText = cardElement.getAttribute('data-title');
+            document.getElementById('modal-img').src = cardElement.getAttribute('data-image');
+            document.getElementById('modal-challenge').innerText = cardElement.getAttribute('data-challenge');
+            document.getElementById('modal-points').innerText = cardElement.getAttribute('data-points');
+            document.getElementById('modal-link').href = cardElement.getAttribute('data-link');
+            document.getElementById('game-info-modal').style.display = 'flex';
+        }
+
+        const modalOverlay = document.getElementById('game-info-modal');
+        if(modalOverlay) {
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target.id === 'game-info-modal') e.target.style.display = 'none';
+            });
+        }
+
         function attachAccordionLogic() {
             const toggles = document.querySelectorAll('.tier-toggle');
             toggles.forEach(toggle => {
-                // Remove old listeners to prevent duplicates
                 const newToggle = toggle.cloneNode(true);
                 toggle.parentNode.replaceChild(newToggle, toggle);
                 
@@ -156,6 +282,58 @@
                         content.style.maxHeight = content.scrollHeight + "px"; 
                     }
                 });
+            });
+        }
+
+        const searchInput = document.getElementById('challenge-search');
+        const noResultsMsg = document.getElementById('no-results-msg');
+        if(searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                const allTierSections = document.querySelectorAll('.tier-section');
+                let totalVisibleCards = 0; 
+
+                allTierSections.forEach(section => {
+                    const cards = section.querySelectorAll('.pointercrate-card');
+                    const toggle = section.querySelector('.tier-toggle');
+                    const content = section.querySelector('.tier-content');
+                    let hasVisibleCard = false;
+
+                    if (query.length === 0) {
+                        section.style.display = ""; 
+                        cards.forEach(card => card.style.display = "flex");
+                        if (toggle) toggle.classList.remove('active');
+                        if (content) {
+                            content.classList.remove('search-active');
+                            content.style.maxHeight = null; 
+                        }
+                    } else {
+                        cards.forEach(card => {
+                            const cardText = card.innerText.toLowerCase(); 
+                            if (cardText.includes(query)) {
+                                card.style.display = "flex";
+                                hasVisibleCard = true;
+                                totalVisibleCards++; 
+                            } else {
+                                card.style.display = "none";
+                            }
+                        });
+
+                        if (hasVisibleCard) {
+                            section.style.display = ""; 
+                            if (toggle) toggle.classList.add('active');
+                            if (content) content.classList.add('search-active'); 
+                        } else {
+                            section.style.display = "none"; 
+                        }
+                    }
+                });
+
+                if (query.length > 0 && totalVisibleCards === 0) {
+                    noResultsMsg.style.display = "block";
+                } else {
+                    noResultsMsg.style.display = "none";
+                }
             });
         }
     </script>
