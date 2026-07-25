@@ -210,7 +210,7 @@
                                 <p><strong>Challenge:</strong> ${challenge}</p>
                                 <p class="points-text">${points} points</p>
                             </div>
-                            <div class="grid-overlay">ℹ️ View Info</div>
+                            <div class="grid-overlay">View Info</div>
                         </div>
                     `;
 
@@ -246,11 +246,11 @@
                 const allTiers = document.querySelectorAll('.tier-content-inner');
                 
                 if (isGridMode) {
-                    toggleBtn.innerHTML = "📄 Switch to List View";
+                    toggleBtn.innerHTML = "Switch to List View";
                     allTiers.forEach(tier => tier.classList.add('grid-mode'));
                     document.querySelector('.main-layout').style.maxWidth = "1100px"; 
                 } else {
-                    toggleBtn.innerHTML = "🔲 Switch to Grid View";
+                    toggleBtn.innerHTML = "Switch to Grid View";
                     allTiers.forEach(tier => tier.classList.remove('grid-mode'));
                     document.querySelector('.main-layout').style.maxWidth = "900px"; 
                 }
