@@ -87,8 +87,8 @@
         </div>
     </div>
 
-<div class="modal-overlay" id="podium-modal">
-        <!-- Added an ID here and increased max-width to 650px -->
+        <div class="modal-overlay" id="podium-modal">
+
         <div class="modal-box" id="podium-modal-box" style="max-width: 650px; transition: all 0.3s ease; border: 1px solid #333;"> 
             <div class="modal-header" style="border-bottom-color: rgba(255,255,255,0.1);">
                 <h3 id="podium-modal-title">Player Name</h3>
@@ -97,16 +97,14 @@
             <div class="modal-content">
                 
                 <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                    
-                    <!-- LEFT SIDE: FULL AVATAR (Made wider and taller) -->
+
                     <div style="flex: 0 0 200px; display: flex; justify-content: center; align-items: center; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 20px; margin-right: 20px; min-height: 250px;">
-                        <!-- Added transform: scale(1.35) to zoom in on the Roblox render! -->
+
                         <img id="podium-modal-avatar" src="" alt="Player Avatar" style="width: 100%; max-height: 250px; object-fit: contain; filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.6)); transform: scale(1.35);">
                     </div>
-                    
-                    <!-- RIGHT SIDE: TIERS -->
+
                     <div class="details-inner" id="podium-modal-stats" style="flex: 1; margin: 0;">
-                        <!-- Tiers injected via JS -->
+
                     </div>
                     
                 </div>
@@ -220,8 +218,7 @@
                 </div>
             `;
             leaderboardContainer.innerHTML += podiumHtml;
-            
-            // --- FETCH AVATARS FOR THE PODIUM ---
+
             async function loadPodiumAvatars(p1, p2, p3) {
                 const players = [p1, p2, p3].filter(p => p && p.name !== "N/A");
                 if (players.length === 0) return;
@@ -229,7 +226,6 @@
                 const usernames = players.map(p => p.name);
 
                 try {
-                    // 1. Convert Usernames to User IDs using corsproxy.io
                     const usersApiUrl = "https://corsproxy.io/?" + encodeURIComponent("https://users.roblox.com/v1/usernames/users");
                     const idRes = await fetch(usersApiUrl, {
                         method: "POST", headers: { "Content-Type": "application/json" },
@@ -242,7 +238,6 @@
                     const userIds = idData.data.map(user => user.id);
                     if (userIds.length === 0) return;
 
-                    // 2. Fetch the 150x150 headshots AND the 352x352 full body avatars simultaneously
                     const thumbApiUrl = "https://corsproxy.io/?" + encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userIds.join(',')}&size=150x150&format=Png&isCircular=true`);
                     const fullApiUrl = "https://corsproxy.io/?" + encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar?userIds=${userIds.join(',')}&size=352x352&format=Png&isCircular=false`);
 
@@ -250,7 +245,6 @@
                     const thumbData = await thumbRes.json();
                     const fullData = await fullRes.json();
 
-                    // 3. Map both image types back to usernames
                     const avatarMap = {};
                     const fullAvatarMap = {};
                     idData.data.forEach(user => {
@@ -260,15 +254,12 @@
                         if (full) fullAvatarMap[user.name.toLowerCase()] = full.imageUrl;
                     });
 
-                    // 4. Helper function to update the HTML
                     const updatePlayerImages = (player, medalClass) => {
                         if (!player) return;
                         const pName = player.name.toLowerCase();
-                        
-                        // Set circular headshot on the podium
+
                         if (avatarMap[pName]) document.getElementById(`avatar-${medalClass}`).src = avatarMap[pName];
-                        
-                        // Save the full body URL directly into the podium box's background data
+
                         if (fullAvatarMap[pName]) {
                             const box = document.getElementById(`box-${medalClass}`);
                             if (box) box.setAttribute('data-full-avatar', fullAvatarMap[pName]);
