@@ -147,22 +147,25 @@
                 
                 if (!cols[0]) return; 
                 const name = cols[0].replace(/^"|"$/g, '');
-                
-                const totalScore = parseInt(cols[2].replace(/^"|"$/g, '')) || 0;
+
                 const allGamesRaw = cols[10] ? cols[10].replace(/^"|"$/g, '') : '';
                 const allGames = allGamesRaw.split(',').map(g => g.replace(/^"|"$/g, '').trim()).filter(g => g !== '');
                 
                 let tCounts = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0 };
+                let realDynamicScore = 0;
 
                 allGames.forEach(game => {
                     const tier = gameTierMap[sanitizeForMatch(game)];
+
                     if (tier !== undefined) {
                         tCounts[tier]++;
+                        realDynamicScore++;
                     }
                 });
 
                 playerMap[name] = {
-                    name: name, total: totalScore,
+                    name: name, 
+                    total: realDynamicScore,
                     t0: tCounts["0"], t1: tCounts["1"], t2: tCounts["2"], t3: tCounts["3"], 
                     t4: tCounts["4"], t5: tCounts["5"], t6: tCounts["6"],
                     allGames: allGamesRaw

@@ -263,10 +263,21 @@ function fetchPlayerStats(playerName) {
             if (!cols[nameCol]) return;
 
             const rowName = cols[nameCol].replace(/^"|"$/g, '').trim();
-            const score = parseInt(cols[scoreCol] ? cols[scoreCol].replace(/^"|"$/g, '') : 0) || 0;
             const allGamesRaw = cols[gamesCol] ? cols[gamesCol].replace(/^"|"$/g, '') : '';
 
-            allPlayers.push({ name: rowName, score: score, games: allGamesRaw });
+            let dynamicScore = 0;
+            if (allGamesRaw) {
+                const allGames = allGamesRaw.split(',').map(g => g.trim()).filter(g => g !== '');
+                allGames.forEach(game => {
+                    const cleanGameName = game.replace(/^"|"$/g, '').toLowerCase().trim();
+
+                    if (gameTierMap[cleanGameName] !== undefined) {
+                        dynamicScore++;
+                    }
+                });
+            }
+
+            allPlayers.push({ name: rowName, score: dynamicScore, games: allGamesRaw });
         });
 
         allPlayers.sort((a, b) => b.score - a.score);
