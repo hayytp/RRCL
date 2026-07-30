@@ -6,135 +6,51 @@
     <title>Submit Record - RRCL</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* MAIN PAGE OVERRIDES FOR CLEAN LOOK */
         .selection-preview {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px dashed #555;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ccc;
+            background-color: rgba(255, 255, 255, 0.05); border: 1px dashed #555;
+            border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 20px; color: #ccc;
         }
         .open-modal-btn {
-            background-color: transparent;
-            border: 2px solid #22c55e;
-            color: #22c55e;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: all 0.2s;
-            width: 100%;
-            margin-bottom: 10px;
+            background-color: transparent; border: 2px solid #22c55e; color: #22c55e;
+            padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;
+            text-transform: uppercase; transition: all 0.2s; width: 100%; margin-bottom: 10px;
         }
-        .open-modal-btn:hover {
-            background-color: rgba(34, 197, 94, 0.1);
+        .open-modal-btn:hover { background-color: rgba(34, 197, 94, 0.1); }
+        
+        .badge-check-btn {
+            background-color: transparent; border: 2px solid #3b82f6; color: #3b82f6;
+            padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;
+            text-transform: uppercase; transition: all 0.2s; width: 100%; margin-bottom: 20px;
         }
+        .badge-check-btn:hover { background-color: rgba(59, 130, 246, 0.1); }
 
-        /* THE MODAL OVERLAY (The Pop-up) */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(4px); /* Sleek blur effect */
-            display: none; /* Hidden by default */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px); 
+            display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-box {
-            background-color: #111;
-            border: 1px solid #333;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
+            background-color: #111; border: 1px solid #333; border-radius: 12px;
+            width: 90%; max-width: 500px; max-height: 85vh; display: flex; flex-direction: column;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #222;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h3 {
-            margin: 0;
-            color: #fff;
-        }
-        .close-modal-x {
-            color: #888;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
+        .modal-header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; color: #fff; }
+        .close-modal-x { color: #888; font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
         .close-modal-x:hover { color: #ef4444; }
-        
-        .modal-content {
-            padding: 20px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-        /* Custom Scrollbar */
+        .modal-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
         .modal-content::-webkit-scrollbar { width: 8px; }
         .modal-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-        
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #222;
-            background-color: #0a0a0a;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
+        .modal-footer { padding: 20px; border-top: 1px solid #222; background-color: #0a0a0a; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
 
-        /* Checkbox Styling inside Modal */
         .tier-group { margin-bottom: 25px; }
-        .tier-group h4 {
-            margin: 0 0 10px 0;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #333;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            cursor: pointer;
-            color: #ccc;
-            font-size: 0.95rem;
-        }
-        .checkbox-label input {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
-            accent-color: #22c55e;
-        }
-
-        /* Disabled Checkbox Styling */
-        .checkbox-label.disabled-label {
-            cursor: not-allowed;
-            color: #555;
-        }
-        .checkbox-label.disabled-label input {
-            cursor: not-allowed;
-            accent-color: #555; 
-        }
-        .completed-tag {
-            color: #22c55e;
-            font-size: 0.8rem;
-            margin-left: 10px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
+        .tier-group h4 { margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid #333; text-transform: uppercase; letter-spacing: 1px; }
+        .checkbox-label { display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; color: #ccc; font-size: 0.95rem; }
+        .checkbox-label input { margin-right: 12px; width: 18px; height: 18px; accent-color: #22c55e; }
+        .checkbox-label.disabled-label { cursor: not-allowed; color: #555; }
+        .checkbox-label.disabled-label input { cursor: not-allowed; accent-color: #555; }
+        .completed-tag { color: #22c55e; font-size: 0.8rem; margin-left: 10px; font-weight: bold; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -153,24 +69,30 @@
     <div class="main-layout">
         <div class="submit-container">
             <h2>Submit a Record</h2>
-            <p style="margin-bottom: 25px;">Provide your proof link and select the challenges you've completed.</p>
+            <p style="margin-bottom: 25px;">Provide your proof link and select challenges, OR request an automatic badge scan.</p>
             
+            <button type="button" class="badge-check-btn" id="open-badge-modal-btn">Request Auto Badge Check</button>
+
             <form id="rrcl-submit-form">
                 <input type="hidden" id="roblox-name" name="roblox-name" required>
                 <input type="hidden" id="discord-name" name="discord-name" required>
                 <input type="hidden" id="selected-challenges" name="selected-challenges" required>
                 <input type="hidden" id="selected-tiers" name="selected-tiers" required>
+                <input type="hidden" id="is-badge-check" name="is-badge-check" value="false">
 
-                <button type="button" class="open-modal-btn" id="open-modal-btn">+ Select Challenges</button>
-                
-                <div class="selection-preview" id="selection-preview">
-                    <em>No challenges selected yet.</em>
+                <div id="standard-submission-ui">
+                    <button type="button" class="open-modal-btn" id="open-modal-btn">+ Select Challenges</button>
+                    
+                    <div class="selection-preview" id="selection-preview">
+                        <em>No challenges selected yet.</em>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="video-link">Proof Link</label>
+                        <textarea id="video-link" name="video-link" rows="3" placeholder="Paste your proof links here..." style="resize: vertical; width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: rgba(255,255,255,0.05); color: #fff;"></textarea>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="video-link">Proof Link</label>
-                    <textarea id="video-link" name="video-link" rows="3" placeholder="Paste your proof links here... (Press Shift+Enter for new lines)" style="resize: vertical; font-family: inherit; width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: rgba(255,255,255,0.05); color: #fff;" required></textarea>
-                </div>
                 <div class="form-group">
                     <label for="submit-note">Leave a Note (Optional)</label>
                     <textarea id="submit-note" name="submit-note" rows="3" placeholder="Any extra info for the list mods?"></textarea>
@@ -178,26 +100,43 @@
 
                 <button type="submit" class="submit-btn" id="main-submit-btn">Send Submission</button>
             </form>
-            
-            <p style="margin-top: 25px; color: #888888; font-size: 0.95rem; line-height: 1.5;">
-                Having trouble submitting? You can always submit your proof directly in the <a href="https://discord.gg/nUk5f6atVt" class="discord-link">#submissions</a> channel in our Discord Server!
-            </p>
         </div>
     </div>
 
+    <!-- CHALLENGE SELECTOR MODAL -->
     <div class="modal-overlay" id="challenges-modal">
         <div class="modal-box">
             <div class="modal-header">
                 <h3>Select Challenges</h3>
                 <div class="close-modal-x" id="close-x">&times;</div>
             </div>
-            
             <div class="modal-content" id="modal-content">
                 <p style="color: #888; text-align: center;">Loading challenges database...</p>
-                </div>
-            
+            </div>
             <div class="modal-footer">
                 <button type="button" class="submit-btn" id="done-modal-btn" style="margin: 0; background-color: #22c55e;">Confirm Selection</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BADGE CHECK DISCLAIMER MODAL -->
+    <div class="modal-overlay" id="badge-disclaimer-modal">
+        <div class="modal-box">
+            <div class="modal-header" style="border-bottom-color: #3b82f6;">
+                <h3 style="color: #3b82f6;">Auto Badge Check</h3>
+                <div class="close-modal-x" id="close-badge-x">&times;</div>
+            </div>
+            <div class="modal-content">
+                <p style="color: #ccc; line-height: 1.6; margin-bottom: 20px;">
+                    Requesting a Badge Check will send a ping to the List Mods. Once approved, the system will securely scan your public Roblox inventory for any RRCL Challenge Badges and automatically add them to your profile.
+                </p>
+                <p style="color: #ef4444; font-weight: bold; font-size: 0.9rem;">
+                    Note: Ensure your Roblox Inventory is set to PUBLIC in your privacy settings, otherwise the scan will fail.
+                </p>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 10px;">
+                <button type="button" class="submit-btn" id="cancel-badge-btn" style="margin: 0; background-color: #444; flex: 1;">Cancel</button>
+                <button type="button" class="submit-btn" id="confirm-badge-btn" style="margin: 0; background-color: #3b82f6; flex: 1;">Proceed</button>
             </div>
         </div>
     </div>
@@ -229,9 +168,17 @@
         const doneModalBtn = document.getElementById('done-modal-btn');
         const modalContent = document.getElementById('modal-content');
         
+        const badgeBtn = document.getElementById('open-badge-modal-btn');
+        const badgeModal = document.getElementById('badge-disclaimer-modal');
+        const closeBadgeX = document.getElementById('close-badge-x');
+        const cancelBadgeBtn = document.getElementById('cancel-badge-btn');
+        const confirmBadgeBtn = document.getElementById('confirm-badge-btn');
+        const standardUi = document.getElementById('standard-submission-ui');
+        
         const selectionPreview = document.getElementById('selection-preview');
         const hiddenChallengesInput = document.getElementById('selected-challenges');
         const hiddenTiersInput = document.getElementById('selected-tiers');
+        const hiddenBadgeFlag = document.getElementById('is-badge-check');
         const submitBtn = document.getElementById('main-submit-btn');
 
         const challengesCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtXIb_sqcdrIBkTb9EJnprKldJeS_0M_LnsXLItE5IZfM9eG43h-KKl0g2TfG7RFepDnpQUjTRkmZh/pub?gid=0&single=true&output=csv';
@@ -242,7 +189,6 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-
                 const fullNames = user.displayName || "Unknown||Player";
                 const splitNames = fullNames.split("||");
                 const loggedInRobloxName = splitNames[0].toLowerCase().trim();
@@ -259,7 +205,6 @@
                     fetch(challengesCsvUrl).then(res => res.text()),
                     fetch(playersCsvUrl).then(res => res.text())
                 ]).then(([challengesData, playersData]) => {
-
                     let completedGames = [];
                     const playerRows = playersData.split('\n').slice(1);
                     for (let row of playerRows) {
@@ -311,10 +256,8 @@
                                     label.className = 'checkbox-label';
                                     label.innerHTML = `<input type="checkbox" value="${game}" data-tier="${i}"> ${game}`;
                                 }
-                                
                                 groupDiv.appendChild(label);
                             });
-                            
                             modalContent.appendChild(groupDiv);
                         }
                     }
@@ -322,19 +265,16 @@
                     modalContent.innerHTML = '<p style="color: #ef4444;">Failed to load database.</p>';
                     console.error(err);
                 });
-
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        openModalBtn.addEventListener('click', () => {
-            modalOverlay.style.display = 'flex';
-        });
+        // STANDARD SUBMISSION MODAL LOGIC
+        openModalBtn.addEventListener('click', () => modalOverlay.style.display = 'flex');
         
         function closeModalAndSave() {
             modalOverlay.style.display = 'none';
-            
             const checkedBoxes = modalContent.querySelectorAll('input[type="checkbox"]:checked:not(:disabled)');
             const selectedGames = [];
             const selectedTiers = new Set(); 
@@ -360,8 +300,26 @@
 
         closeModalX.addEventListener('click', closeModalAndSave);
         doneModalBtn.addEventListener('click', closeModalAndSave);
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeModalAndSave();
+        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModalAndSave(); });
+
+        badgeBtn.addEventListener('click', () => badgeModal.style.display = 'flex');
+        
+        const closeBadgeModal = () => badgeModal.style.display = 'none';
+        closeBadgeX.addEventListener('click', closeBadgeModal);
+        cancelBadgeBtn.addEventListener('click', closeBadgeModal);
+        
+        confirmBadgeBtn.addEventListener('click', () => {
+            closeBadgeModal();
+            standardUi.style.display = 'none';
+            badgeBtn.innerText = "Badge Check Ready to Submit";
+            badgeBtn.style.backgroundColor = "rgba(59, 130, 246, 0.2)";
+            badgeBtn.style.pointerEvents = "none";
+
+            hiddenBadgeFlag.value = "true";
+            hiddenChallengesInput.value = "AUTO_BADGE_CHECK";
+            hiddenTiersInput.value = "N/A";
+            document.getElementById('video-link').value = "N/A";
+            document.getElementById('video-link').removeAttribute('required');
         });
 
         const COOLDOWN_TIME = 120000; 
@@ -385,7 +343,7 @@
             e.preventDefault(); 
             if (checkCooldown()) return; 
 
-            if (hiddenChallengesInput.value === "") {
+            if (hiddenBadgeFlag.value === "false" && hiddenChallengesInput.value === "") {
                 alert("Please click '+ Select Challenges' and choose at least one game!");
                 return;
             }
@@ -414,19 +372,12 @@
                 submitBtn.innerText = "Submitted!";
                 submitBtn.style.backgroundColor = "#1ea34d"; 
                 
-                document.getElementById('video-link').value = "";
-                document.getElementById('submit-note').value = "";
-
-                const allCheckboxes = modalContent.querySelectorAll('input[type="checkbox"]');
-                allCheckboxes.forEach(cb => cb.checked = false);
-                selectionPreview.innerHTML = "<em>No challenges selected yet.</em>";
-                selectionPreview.style.borderColor = "#555";
-                selectionPreview.style.color = "#ccc";
-                hiddenChallengesInput.value = "";
-                hiddenTiersInput.value = "";
+                // Reset form completely
+                setTimeout(() => {
+                    window.location.reload(); 
+                }, 2000);
                 
                 localStorage.setItem('rrcl_last_submission', Date.now());
-                setTimeout(() => { checkCooldown(); }, 3000);
             })
             .catch(error => {
                 submitBtn.innerText = "Error! Try Again.";
