@@ -196,9 +196,16 @@
                     const points = cols[4] ? cols[4].trim() : '';
                     const gameLink = cols[5] ? cols[5].trim() : '#'; 
 
-                    // CHECK FOR EXACT MATCH USING THE SANITIZER
+                    const badgeId = cols[7] ? cols[7].replace(/[^0-9]/g, '').trim() : ''; 
+
                     const isCompleted = completedGames.includes(sanitizeForMatch(title));
                     const completedClass = isCompleted ? "completed-card" : "";
+
+                    let badgeHtml = "";
+                    if (badgeId !== "") {
+                        const badgeUrl = `https://www.roblox.com/badges/${badgeId}/`;
+                        badgeHtml = `<a href="${badgeUrl}" target="_blank" class="badge-link-icon" data-badge-id="${badgeId}" title="This challenge has an official badge! Click to view on Roblox." onclick="event.stopPropagation()"></a>`;
+                    }
 
                     const cardHtml = `
                         <div class="pointercrate-card ${completedClass}" onclick="openGridModal(this)" data-title="${title}" data-image="${image}" data-challenge="${challenge}" data-points="${points} points" data-link="${gameLink}">
@@ -211,6 +218,7 @@
                                 <p class="points-text">${points} points</p>
                             </div>
                             <div class="grid-overlay">View Info</div>
+                            ${badgeHtml}
                         </div>
                     `;
 
@@ -230,6 +238,33 @@
                 tiersContainer.style.display = 'block';
 
                 attachAccordionLogic(); 
+
+                const badgeElements = document.querySelectorAll('.badge-link-icon');
+                const uniqueBadgeIds = [...new Set(Array.from(badgeElements).map(el => el.getAttribute('data-badge-id')))];
+
+                if (uniqueBadgeIds.length > 0) {
+                    for (let i = 0; i < uniqueBadgeIds.length; i += 50) {
+                        const chunk = uniqueBadgeIds.slice(i, i + 50);
+                        const thumbUrl = `https://thumbnails.roproxy.com/v1/badges/icons?badgeIds=${chunk.join(',')}&size=150x150&format=Png&isCircular=true`;
+                        
+                        fetch(thumbUrl)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.data) {
+                                    data.data.forEach(item => {
+                                        const targetEls = document.querySelectorAll(`.badge-link-icon[data-badge-id="${item.targetId}"]`);
+                                        if (item.imageUrl) {
+                                            targetEls.forEach(el => {
+                                                el.style.backgroundImage = `url('${item.imageUrl}')`;
+                                            });
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(err => console.error("Error fetching badge thumbnails:", err));
+                    }
+                }
+
             }).catch(err => {
                 loadingScreen.innerText = "Error Loading List. Please refresh.";
                 loadingScreen.style.color = "#ef4444";
@@ -291,6 +326,7 @@
                 });
             });
         }
+
 
         const searchInput = document.getElementById('challenge-search');
         const noResultsMsg = document.getElementById('no-results-msg');

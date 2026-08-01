@@ -43,6 +43,7 @@ body {
    ========================================= */
 
 .pointercrate-card {
+    position: relative;
     background-color: rgba(0, 0, 0, 0.7);  
     border: 1px solid #555555; 
     border-top: 4px solid #22c55e;
@@ -78,6 +79,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center; 
+    padding-right: 80px;
 }
 
 .card-text h2 {
@@ -806,6 +808,11 @@ body {
         text-align: center;
         padding: 15px;
     }
+
+    .card-text {
+        padding-right: 0;
+    }
+
     .card-link-wrapper {
         margin: 0 0 15px 0; 
         width: 100%;
@@ -1357,4 +1364,37 @@ body {
     border: 4px solid #22c55e;
     box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
     box-sizing: border-box; 
+}
+
+/* =========================================
+   21. FLOATING BADGE ICON
+   ========================================= */
+.badge-link-icon {
+    position: absolute;
+    right: 30px; 
+    top: 50%;
+    transform: translateY(-50%); 
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.badge-link-icon:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.15); 
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7)); 
+}
+
+/* Hide in grid mode */
+.tier-content-inner.grid-mode .badge-link-icon {
+    display: none;
 }
